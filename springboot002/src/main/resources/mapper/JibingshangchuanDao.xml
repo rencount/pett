@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.JibingshangchuanDao">
+
+    <resultMap type="com.entity.JibingshangchuanEntity" id="jibingshangchuanMap">
+                    <result property="id"    column="id"    />
+                    <result property="addtime"    column="addtime"    />
+                    <result property="chongwumingcheng"    column="chongwumingcheng"    />
+                    <result property="bingqingmiaoshu"    column="bingqingmiaoshu"    />
+                    <result property="tupianshangchuan"    column="tupianshangchuan"    />
+                    <result property="buchong"    column="buchong"    />
+                    <result property="fabushijian"    column="fabushijian"    />
+                    <result property="userid"    column="userid"    />
+                    <result property="sfsh"    column="sfsh"    />
+                    <result property="shhf"    column="shhf"    />
+            </resultMap>
+
+    <select id="selectListVO"
+            resultType="com.entity.vo.JibingshangchuanVO">
+        SELECT * FROM jibingshangchuan jibingshangchuan
+        <where> 1=1 ${ew.sqlSegment}</where>
+    </select>
+
+    <select id="selectVO"
+            resultType="com.entity.vo.JibingshangchuanVO">
+        SELECT jibingshangchuan.* FROM jibingshangchuan jibingshangchuan
+        <where> 1=1 ${ew.sqlSegment}</where>
+    </select>
+
+    <select id="selectListView"
+            resultType="com.entity.view.JibingshangchuanView">
+
+        SELECT jibingshangchuan.* FROM jibingshangchuan jibingshangchuan
+        <where> 1=1 ${ew.sqlSegment}</where>
+    </select>
+
+    <select id="selectView"
+            resultType="com.entity.view.JibingshangchuanView">
+        SELECT * FROM jibingshangchuan jibingshangchuan
+        <where> 1=1 ${ew.sqlSegment}</where>
+    </select>
+
+</mapper>

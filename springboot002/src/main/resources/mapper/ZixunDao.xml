@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.ZixunDao">
+
+    <resultMap type="com.entity.ZixunEntity" id="zixunMap">
+                    <result property="id"    column="id"    />
+                    <result property="addtime"    column="addtime"    />
+                    <result property="chongwuyisheng"    column="chongwuyisheng"    />
+                    <result property="touxiang"    column="touxiang"    />
+                    <result property="xingbie"    column="xingbie"    />
+                    <result property="lianxifangshi"    column="lianxifangshi"    />
+                    <result property="xiangqing"    column="xiangqing"    />
+                    <result property="userid"    column="userid"    />
+            </resultMap>
+
+    <select id="selectListVO"
+            resultType="com.entity.vo.ZixunVO">
+        SELECT * FROM zixun zixun
+        <where> 1=1 ${ew.sqlSegment}</where>
+    </select>
+
+    <select id="selectVO"
+            resultType="com.entity.vo.ZixunVO">
+        SELECT zixun.* FROM zixun zixun
+        <where> 1=1 ${ew.sqlSegment}</where>
+    </select>
+
+    <select id="selectListView"
+            resultType="com.entity.view.ZixunView">
+
+        SELECT zixun.* FROM zixun zixun
+        <where> 1=1 ${ew.sqlSegment}</where>
+    </select>
+
+    <select id="selectView"
+            resultType="com.entity.view.ZixunView">
+        SELECT * FROM zixun zixun
+        <where> 1=1 ${ew.sqlSegment}</where>
+    </select>
+
+</mapper>

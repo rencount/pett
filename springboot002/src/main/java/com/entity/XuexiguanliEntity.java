@@ -1,0 +1,186 @@
+package com.entity;
+
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableName;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.lang.reflect.InvocationTargetException;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+import java.sql.Timestamp;
+import java.math.BigDecimal;
+import org.springframework.format.annotation.DateTimeFormat;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.apache.commons.beanutils.BeanUtils;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.enums.FieldFill;
+import com.baomidou.mybatisplus.enums.IdType;
+
+
+/**
+ * 学习管理
+ * 数据库通用操作实体类（普通增删改查）
+ */
+@TableName("xuexiguanli")
+public class XuexiguanliEntity<T> implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+
+    public XuexiguanliEntity() {
+
+    }
+
+    public XuexiguanliEntity(T t) {
+        try {
+            BeanUtils.copyProperties(this, t);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+ /** 主键 */
+    private Long id;
+
+ /** 创建时间 */
+@JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
+@DateTimeFormat
+    private Timestamp addtime;
+
+ /** 标题 */
+    private String biaoti;
+
+ /** 图片 */
+    private String tupian;
+
+ /** 详情 */
+    private String xiangqing;
+
+ /** 上传时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date shangchuanshijian;
+
+ /** 最近点击时间 */
+@JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
+@DateTimeFormat
+    private Timestamp clicktime;
+
+ /** 点击次数 */
+    private Long clicknum;
+
+ /** 赞 */
+    private Long thumbsupnum;
+
+ /** 踩 */
+    private Long crazilynum;
+
+ /** 是否审核 */
+    private String sfsh;
+
+ /** 审核回复 */
+    private String shhf;
+
+    public void setId(Long id)
+    {
+        this.id = id;
+    }
+    public Long getId()
+    {
+        return id;
+    }
+    public void setAddtime(Timestamp addtime)
+    {
+        this.addtime = addtime;
+    }
+    public Timestamp getAddtime()
+    {
+        return addtime;
+    }
+    public void setBiaoti(String biaoti)
+    {
+        this.biaoti = biaoti;
+    }
+    public String getBiaoti()
+    {
+        return biaoti;
+    }
+    public void setTupian(String tupian)
+    {
+        this.tupian = tupian;
+    }
+    public String getTupian()
+    {
+        return tupian;
+    }
+    public void setXiangqing(String xiangqing)
+    {
+        this.xiangqing = xiangqing;
+    }
+    public String getXiangqing()
+    {
+        return xiangqing;
+    }
+    public void setShangchuanshijian(Date shangchuanshijian)
+    {
+        this.shangchuanshijian = shangchuanshijian;
+    }
+    public Date getShangchuanshijian()
+    {
+        return shangchuanshijian;
+    }
+    public void setClicktime(Timestamp clicktime)
+    {
+        this.clicktime = clicktime;
+    }
+    public Timestamp getClicktime()
+    {
+        return clicktime;
+    }
+    public void setClicknum(Long clicknum)
+    {
+        this.clicknum = clicknum;
+    }
+    public Long getClicknum()
+    {
+        return clicknum;
+    }
+    public void setThumbsupnum(Long thumbsupnum)
+    {
+        this.thumbsupnum = thumbsupnum;
+    }
+    public Long getThumbsupnum()
+    {
+        return thumbsupnum;
+    }
+    public void setCrazilynum(Long crazilynum)
+    {
+        this.crazilynum = crazilynum;
+    }
+    public Long getCrazilynum()
+    {
+        return crazilynum;
+    }
+    public void setSfsh(String sfsh)
+    {
+        this.sfsh = sfsh;
+    }
+    public String getSfsh()
+    {
+        return sfsh;
+    }
+    public void setShhf(String shhf)
+    {
+        this.shhf = shhf;
+    }
+    public String getShhf()
+    {
+        return shhf;
+    }
+
+}

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.ZhenduanDao">
+
+    <resultMap type="com.entity.ZhenduanEntity" id="zhenduanMap">
+                    <result property="id"    column="id"    />
+                    <result property="addtime"    column="addtime"    />
+                    <result property="chongwumingcheng"    column="chongwumingcheng"    />
+                    <result property="zhengzhuang"    column="zhengzhuang"    />
+                    <result property="zhiliaojianyi"    column="zhiliaojianyi"    />
+                    <result property="zhenduanshijian"    column="zhenduanshijian"    />
+                    <result property="zhenduanren"    column="zhenduanren"    />
+                    <result property="lianxifangshi"    column="lianxifangshi"    />
+                    <result property="userid"    column="userid"    />
+            </resultMap>
+
+    <select id="selectListVO"
+            resultType="com.entity.vo.ZhenduanVO">
+        SELECT * FROM zhenduan zhenduan
+        <where> 1=1 ${ew.sqlSegment}</where>
+    </select>
+
+    <select id="selectVO"
+            resultType="com.entity.vo.ZhenduanVO">
+        SELECT zhenduan.* FROM zhenduan zhenduan
+        <where> 1=1 ${ew.sqlSegment}</where>
+    </select>
+
+    <select id="selectListView"
+            resultType="com.entity.view.ZhenduanView">
+
+        SELECT zhenduan.* FROM zhenduan zhenduan
+        <where> 1=1 ${ew.sqlSegment}</where>
+    </select>
+
+    <select id="selectView"
+            resultType="com.entity.view.ZhenduanView">
+        SELECT * FROM zhenduan zhenduan
+        <where> 1=1 ${ew.sqlSegment}</where>
+    </select>
+
+</mapper>
