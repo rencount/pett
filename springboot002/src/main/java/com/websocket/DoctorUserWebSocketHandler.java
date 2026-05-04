@@ -64,6 +64,7 @@ public class DoctorUserWebSocketHandler extends TextWebSocketHandler {
                 String toRole = String.valueOf(jsonObject.get("toRole"));
                 String targetUserIdStr = String.valueOf(jsonObject.get("targetUserId"));
                 String msg = (String)jsonObject.get("msg");
+                String avatar = (String) jsonObject.get("avatar");
                 Long userId = Long.parseLong(targetUserIdStr);
 
                 if(targetUserIdStr != null && !targetUserIdStr.trim().equals("")) { //单发
@@ -81,14 +82,20 @@ public class DoctorUserWebSocketHandler extends TextWebSocketHandler {
                             com.entity.ChongwuyishengEntity doctor = chongwuyishengService.selectById(Long.parseLong(srcUserIdStr));
                             if (doctor != null) {
                                 srcUserNichengStr = doctor.getNicheng() != null ? doctor.getNicheng() : doctor.getZhanghao();
+                                if (avatar == null || avatar.trim().isEmpty()) {
+                                    avatar = doctor.getTouxiang();
+                                }
                             } else {
                                 com.service.YonghuService yonghuService = (com.service.YonghuService)SpringContextUtils.getBean("yonghuService");
                                 com.entity.YonghuEntity user = yonghuService.selectById(Long.parseLong(srcUserIdStr));
                                 if (user != null) {
                                     srcUserNichengStr = user.getNicheng() != null ? user.getNicheng() : user.getZhanghao();
+                                    if (avatar == null || avatar.trim().isEmpty()) {
+                                        avatar = user.getTouxiang();
+                                    }
                                 }
                             }
-                            
+
                             consultationEntity.setSenderName(srcUserNichengStr);
                             consultationEntity.setReceiver(userId);
                             consultationEntity.setMsg(msg);
@@ -105,7 +112,7 @@ public class DoctorUserWebSocketHandler extends TextWebSocketHandler {
                                         WebSocketSession webSocketSession = userSessionMap.get(chatUser);
                                         webSocketSession.sendMessage(new TextMessage("{\"type\": \"MESSAGE\", " +
                                                 "\"srcUserIdStr\": " + srcUserIdStr + ", \"srcUserNichengStr\": \"" +
-                                                srcUserNichengStr + "\", \"msg\": \"" + msg + "\", \"sendTime\": \"" + sdf.format(sendTime) + "\"}"));
+                                                srcUserNichengStr + "\", \"msg\": \"" + msg + "\", \"sendTime\": \"" + sdf.format(sendTime) + "\", \"avatar\": \"" + (avatar != null ? avatar : "") + "\"}"));
                                         break out;
                                     }
                                 }
@@ -117,20 +124,26 @@ public class DoctorUserWebSocketHandler extends TextWebSocketHandler {
                             ConsultationEntity<Object> consultation = new ConsultationEntity<>();
                             consultation.setId(new Date().getTime() + new Double(Math.floor(Math.random() * 1000)).longValue());
                             consultation.setSender(Long.parseLong(srcUserIdStr));
-                            
+
                             // 获取发送者的最新昵称
                             com.service.ChongwuyishengService chongwuyishengService = (com.service.ChongwuyishengService)SpringContextUtils.getBean("chongwuyishengService");
                             com.entity.ChongwuyishengEntity doctor = chongwuyishengService.selectById(Long.parseLong(srcUserIdStr));
                             if (doctor != null) {
                                 srcUserNichengStr = doctor.getNicheng() != null ? doctor.getNicheng() : doctor.getZhanghao();
+                                if (avatar == null || avatar.trim().isEmpty()) {
+                                    avatar = doctor.getTouxiang();
+                                }
                             } else {
                                 com.service.YonghuService yonghuService = (com.service.YonghuService)SpringContextUtils.getBean("yonghuService");
                                 com.entity.YonghuEntity user = yonghuService.selectById(Long.parseLong(srcUserIdStr));
                                 if (user != null) {
                                     srcUserNichengStr = user.getNicheng() != null ? user.getNicheng() : user.getZhanghao();
+                                    if (avatar == null || avatar.trim().isEmpty()) {
+                                        avatar = user.getTouxiang();
+                                    }
                                 }
                             }
-                            
+
                             consultation.setSenderName(srcUserNichengStr);
                             consultation.setReceiver(userId);
                             consultation.setMsg(msg);
@@ -146,7 +159,7 @@ public class DoctorUserWebSocketHandler extends TextWebSocketHandler {
                                     WebSocketSession webSocketSession = userSessionMap.get(chatUser);
                                     webSocketSession.sendMessage(new TextMessage("{\"type\": \"MESSAGE\", " +
                                             "\"srcUserIdStr\": " + srcUserIdStr + ", \"srcUserNichengStr\": \"" +
-                                            srcUserNichengStr + "\", \"msg\": \"" + msg + "\", \"sendTime\": \"" + sdf.format(sendTime) + "\"}"));
+                                            srcUserNichengStr + "\", \"msg\": \"" + msg + "\", \"sendTime\": \"" + sdf.format(sendTime) + "\", \"avatar\": \"" + (avatar != null ? avatar : "") + "\"}"));
                                     break;
                                 }
                             }

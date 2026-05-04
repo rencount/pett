@@ -1,5 +1,6 @@
 package com.entity;
 
+import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -58,6 +59,11 @@ public class ConsultationEntity<T> implements Serializable {
      * 是否已读
      */
     private Integer readStatus;
+    /**
+     * 头像（不映射数据库字段，仅用于传输）
+     */
+    @TableField(exist = false)
+    private String avatar;
 
 
     public Long getId() {
@@ -122,5 +128,13 @@ public class ConsultationEntity<T> implements Serializable {
 
     public void setMsg(String msg) {
         this.msg = msg;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

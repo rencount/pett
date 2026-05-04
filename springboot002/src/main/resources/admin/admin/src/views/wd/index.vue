@@ -49,14 +49,15 @@
             return;
         }
         if (state.ruleForm.ask != undefined && state.ruleForm.ask != '') {
-            state.dataList.push({'userId': parseInt(state.targetUserId), 'nickname': state.userInfo.nicheng, 'ask': state.ruleForm.ask, 'sendTime': getCurrentDateTime()});
-            
+            state.dataList.push({'userId': parseInt(state.targetUserId), 'nickname': state.userInfo.nicheng, 'ask': state.ruleForm.ask, 'sendTime': getCurrentDateTime(), 'avatar': state.userInfo.touxiang || ''});
+
             socket.send(JSON.stringify({
                 type: 'MESSAGE',
                 srcUserId: state.userInfo.id,
                 srcUserNicheng: state.userInfo.nicheng,
                 targetUserId: state.targetUserId,  //给谁发消息
-                msg: state.ruleForm.ask
+                msg: state.ruleForm.ask,
+                avatar: state.userInfo.touxiang || ''
             }));
             state.ruleForm.ask = '';
             scrollToBottom();
@@ -85,23 +86,24 @@
                 let im_user = {}
                 im_user['nicheng'] = data.srcUserNichengStr
                 im_user['userId'] = parseInt(data.srcUserIdStr)
+                im_user['avatar'] = data.avatar || ''
                 if (state.targetUserId != data.srcUserIdStr) {
                     im_user['unread_msg_count'] = 1
                 }
                 state.im_users.push(im_user)
             }
-            
+
             if (state.targetUserId == data.srcUserIdStr && route.path == '/wenzhen') {
                 request({
                     url:`consultation/update`,
                     method:'POST',
                     data: {sender: data.srcUserIdStr}
                 }).then(resp => {
-                    state.dataList.push({'userId': parseInt(data.srcUserIdStr), 'nickname': data.srcUserNichengStr, 'reply': data.msg, 'sendTime': data.sendTime});
+                    state.dataList.push({'userId': parseInt(data.srcUserIdStr), 'nickname': data.srcUserNichengStr, 'reply': data.msg, 'sendTime': data.sendTime, 'avatar': data.avatar || ''});
                     scrollToBottom();
                 })
             } else {
-                state.dataList.push({'userId': parseInt(data.srcUserIdStr), 'nickname': data.srcUserNichengStr, 'reply': data.msg, 'sendTime': data.sendTime});
+                state.dataList.push({'userId': parseInt(data.srcUserIdStr), 'nickname': data.srcUserNichengStr, 'reply': data.msg, 'sendTime': data.sendTime, 'avatar': data.avatar || ''});
             }
         }
     };
@@ -138,17 +140,19 @@
                     acc[senderId] = {
                         userId: senderId,
                         nicheng: message.senderName,
-                        unread_msg_count: 0
+                        unread_msg_count: 0,
+                        avatar: message.avatar || ''
                     };
                 }
                 if (senderId != state.userInfo.id && message.readStatus === 0) {
                     acc[senderId].unread_msg_count++;
-                    
+
                 } else if (senderId != state.userInfo.id && message.readStatus === 1) {
                     acc[senderId] = {
                         userId: senderId,
                         nicheng: message.senderName,
-                        unread_msg_count: ''
+                        unread_msg_count: '',
+                        avatar: message.avatar || ''
                     };
                 }
                 return acc;
@@ -160,9 +164,9 @@
             
             for (let i = 0; i < data.length; i++) {
                 if(data[i]['sender'] != state.userInfo.id) {
-                    state.dataList.push({'userId': parseInt(data[i]['sender']), 'nickname': data[i]['senderName'], 'reply': data[i]['msg'], 'sendTime': data[i]['sendTime']});
+                    state.dataList.push({'userId': parseInt(data[i]['sender']), 'nickname': data[i]['senderName'], 'reply': data[i]['msg'], 'sendTime': data[i]['sendTime'], 'avatar': data[i]['avatar'] || ''});
                 } else {
-                    state.dataList.push({'userId': parseInt(data[i]['receiver']), 'nickname': state.userInfo.nicheng, 'ask': data[i]['msg'], 'sendTime': data[i]['sendTime']});
+                    state.dataList.push({'userId': parseInt(data[i]['receiver']), 'nickname': state.userInfo.nicheng, 'ask': data[i]['msg'], 'sendTime': data[i]['sendTime'], 'avatar': data[i]['avatar'] || ''});
                 }
             }
         })
@@ -262,7 +266,7 @@
             <div style="width: 200px; height: 100%; border: 1px; background-color: white;">
                 <div class="selectable-div" v-for="(user, index) in im_users" :key="index" :class="{ selected: selectedIndex === index }" @click="setTargetUser(user.userId, index)">
                     <div style="width: 150px; display: flex; justify-content: center; align-items: center;">
-                        <img src="../../assets/avatar2.jpg" style="width: 30px; height:30px; border-radius: 20px;"/>
+                        <img :src="user.avatar || '../../assets/avatar2.jpg'" style="width: 30px; height:30px; border-radius: 20px;"/>
                         <el-badge :value="user.unread_msg_count" class="item">
                             <div style="min-width: 50px; width: auto;">{{user.nicheng}}</div>
                         </el-badge>
@@ -273,13 +277,19 @@
             <div style="background-color: lightblue; height:100%; display: flex; flex-direction: column; justify-content: center; width: 100%;">
                 <div class="chat-content" ref="scrollableDiv">
                     <div style="width: 100%;" v-bind:key="item.id" v-for="item in dataList" v-show="item.userId == state.targetUserId">
-                        <div v-if="item.ask" class="right-content" >
-                            <div style="font-size: 12px; font-family: '微软雅黑 Light'; font-weight: bold; margin-bottom: 5px;text-align:right;">{{item.nickname}} {{item.sendTime}}</div>
-                            <el-alert class="text-content" :title="item.ask" :closable="false" style="color: black; font-size: 16px;" ></el-alert>
+                        <div v-if="item.ask" class="message-row message-self" >
+                            <div class="message-bubble">
+                                <div style="font-size: 12px; font-family: '微软雅黑 Light'; font-weight: bold; margin-bottom: 5px;text-align:right;">{{item.nickname}} {{item.sendTime}}</div>
+                                <el-alert class="text-content" :title="item.ask" :closable="false" style="color: black; font-size: 16px;" ></el-alert>
+                            </div>
+                            <img :src="item.avatar || state.userInfo.touxiang || '../../assets/avatar2.jpg'" class="chat-avatar" />
                         </div>
-                        <div v-else class="left-content" >
-                            <div style="font-size: 12px; font-family: '微软雅黑 Light'; font-weight: bold; margin-bottom: 5px;text-align:left;">{{item.nickname}} {{item.sendTime}}</div>
-                            <el-alert class="text-content" :title="item.reply" :closable="false" style="color: black; font-size: 16px;" ></el-alert>
+                        <div v-else class="message-row message-other" >
+                            <img :src="item.avatar || '../../assets/avatar2.jpg'" class="chat-avatar" />
+                            <div class="message-bubble">
+                                <div style="font-size: 12px; font-family: '微软雅黑 Light'; font-weight: bold; margin-bottom: 5px;text-align:left;">{{item.nickname}} {{item.sendTime}}</div>
+                                <el-alert class="text-content" :title="item.reply" :closable="false" style="color: black; font-size: 16px;" ></el-alert>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -367,6 +377,33 @@
         height: 100%;
         display: flex;
         flex-direction: column;
+    }
+    .message-row {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+    .message-self {
+        justify-content: flex-end;
+    }
+    .message-other {
+        justify-content: flex-start;
+    }
+    .chat-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    .message-self .chat-avatar {
+        margin-left: 10px;
+    }
+    .message-other .chat-avatar {
+        margin-right: 10px;
+    }
+    .message-bubble {
+        max-width: 60%;
     }
     .left-content {
         float: left;
