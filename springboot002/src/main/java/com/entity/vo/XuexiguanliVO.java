@@ -49,12 +49,6 @@ public class XuexiguanliVO  implements Serializable {
                                 /** 踩 */
                                                                                                 private Long crazilynum;
 
-                                /** 是否审核 */
-                                                                                                private String sfsh;
-
-                                /** 审核回复 */
-                                                                                                private String shhf;
-
                                                                 public void setId(Long id)
             {
                 this.id = id;
@@ -145,23 +139,5 @@ public class XuexiguanliVO  implements Serializable {
             {
                 return crazilynum;
             }
-                                                        public void setSfsh(String sfsh)
-            {
-                this.sfsh = sfsh;
-            }
 
-            public String getSfsh()
-            {
-                return sfsh;
-            }
-                                                        public void setShhf(String shhf)
-            {
-                this.shhf = shhf;
-            }
-
-            public String getShhf()
-            {
-                return shhf;
-            }
-            
     }

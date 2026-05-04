@@ -23,14 +23,8 @@
           tableList:[],
     ids:[],
     isdel:true,
-              sfshVisiable:false,
-        formData:{},
-      
-        })
-  const { query,tableList,page,isdel
-                          ,sfshVisiable,
-        formData
-              } = {...toRefs(state)};
+            })
+  const { query,tableList,page,isdel } = {...toRefs(state)};
 
 
       
@@ -132,30 +126,6 @@
   }
 
       
-      function shDialog(row:any){
-        state.sfshVisiable=true;
-        state.formData=row;
-
-
-      }
-
-      function shHandler(){
-        confirm("确认要审核吗？").then(()=>{
-
-          request({
-            url:'xuexiguanli/update',
-            method:'post',
-            data:state.formData
-          }).then((data)=>{
-            state.sfshVisiable=false;
-            notify("操作成功",{type:'success'});
-            getDateList();
-          })
-
-        })
-      }
-
-      
 
       
 
@@ -208,19 +178,7 @@
                                                                                                                                                 <el-table-column header-align="center"  align="center" prop="clicknum" label="点击次数"/>
                                                                                                                                                 <el-table-column header-align="center"  align="center" prop="thumbsupnum" label="赞"/>
                                                                                                                                                 <el-table-column header-align="center"  align="center" prop="crazilynum" label="踩"/>
-                                                                                                                                                <el-table-column header-align="center"  align="center" prop="sfsh" label="审核状态">
-                              <template #default="{row}">
-                                  <el-tag :type="row.sfsh === '是' ? 'success' : 'danger'" disable-transitions>{{row.sfsh=='是'?'通过':'未通过'}}</el-tag>
-                              </template>
-                          </el-table-column>
-                          <el-table-column  v-if="isAuth('xuexiguanli','审核')" header-align="center"  align="center" label="审核操作">
-                              <template #default="{row}">
-                                  <el-button type="primary" link icon="ele-Edit" size="small" @click="shDialog(row)">审核
-                                  </el-button>
-                              </template>
-                          </el-table-column>
-                                                                                                                                                <el-table-column header-align="center"  align="center" prop="shhf" label="审核回复"/>
-                                                                          <el-table-column fixed="right" align="center" label="操作" width="250">
+                                                                                                                                  <el-table-column fixed="right" align="center" label="操作" width="250">
               <template #default="{row}">
                                                       <el-button v-if="isAuth('xuexiguanli','修改')" icon="ele-Edit" @click.stop="handleEdit(row)" type="primary" link>修改</el-button>
                   <el-popconfirm  v-if="isAuth('xuexiguanli','删除')"  width="auto" @confirm="handleDelete(row)"  :title="`确定要删除这条记录吗？`">
@@ -238,29 +196,6 @@
       <AddEdit ref="editRef" @refresh="getDateList"/>
     </el-card>
   </div>
-      <el-dialog
-                title="审核"
-                v-model="sfshVisiable"
-                width="50%">
-            <el-form ref="form" :model="formData" label-width="80px">
-                <el-form-item label="审核状态">
-                    <el-select v-model="formData.sfsh" placeholder="审核状态">
-                        <el-option label="通过" value="是"></el-option>
-                        <el-option label="不通过" value="否"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="内容">
-                    <el-input type="textarea" :rows="8" v-model="formData.shhf"></el-input>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-        <el-button @click="shDialog">取 消</el-button>
-        <el-button type="primary" @click="shHandler">确 定</el-button>
-      </span>
-        </el-dialog>
-
-    
-
 
 
 </template>

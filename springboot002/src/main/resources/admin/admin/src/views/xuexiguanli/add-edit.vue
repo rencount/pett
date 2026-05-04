@@ -23,8 +23,6 @@
                                                             clicknum: false,
                                                             thumbsupnum: false,
                                                             crazilynum: false,
-                                                            sfsh: false,
-                                                            shhf: false,
                               },
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         title:'新增',
         type:'add'
@@ -92,16 +90,6 @@
                                                               if (o == 'crazilynum') {
                     state.formData.crazilynum = obj[o];
                     state.roisfalg.crazilynum = true;
-                    continue;
-                  }
-                                                              if (o == 'sfsh') {
-                    state.formData.sfsh = obj[o];
-                    state.roisfalg.sfsh = true;
-                    continue;
-                  }
-                                                              if (o == 'shhf') {
-                    state.formData.shhf = obj[o];
-                    state.roisfalg.shhf = true;
                     continue;
                   }
                                     }

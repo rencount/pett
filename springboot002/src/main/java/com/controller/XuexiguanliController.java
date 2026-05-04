@@ -59,8 +59,7 @@ public class XuexiguanliController {
 
          
 
-                            xuexiguanli.setSfsh("是");
-                                    EntityWrapper<XuexiguanliEntity> ew = new EntityWrapper<XuexiguanliEntity>();
+                                                                EntityWrapper<XuexiguanliEntity> ew = new EntityWrapper<XuexiguanliEntity>();
             PageUtils page = xuexiguanliService.queryPage(params, MPUtil.sort(MPUtil.between(MPUtil.likeOrEq(ew, xuexiguanli), params), params));
             request.setAttribute("data", page);
             return R.ok().put("data", page);
