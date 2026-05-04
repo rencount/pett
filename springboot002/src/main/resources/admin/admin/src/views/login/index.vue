@@ -65,14 +65,7 @@
             :class="{ 'opacity-50 cursor-not-allowed': !isFormValid }">
             登 录
           </button>
-          <!-- Register Buttons -->
-          <div class="text-center mt-4 flex gap-4 justify-center">
 
-            <button type="button" @click="register('chongwuyisheng')"
-              class="font-medium text-pink-500 hover:text-pink-600 hover:underline text-sm">
-              宠物医生注册
-            </button>
-          </div>
         </form>
       </div>
     </div>
@@ -80,13 +73,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, computed, toRefs, defineAsyncComponent, onMounted } from 'vue';
+import { ref, reactive, computed, toRefs, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter, useRoute } from 'vue-router';
 import { Session } from '@/utils/storage';
 import menu from "@/utils/menu";
 
-const Register = defineAsyncComponent(() => import('@/views/login/register.vue'));
 const authStore = useAuthStore();
 
 const router = useRouter();
@@ -106,11 +98,6 @@ const menus = menu.list();
 console.log('DEBUG: Loaded roles are - ', JSON.stringify(menus));
 
 const { loading, loginData, tableName } = { ...toRefs(state) };
-const RegisterRef = ref();
-
-function register(tableName: any) {
-  RegisterRef.value.open(tableName);
-}
 const showPassword = ref(false);
 const formData = ref({
   captcha: ''

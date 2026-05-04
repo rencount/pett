@@ -78,6 +78,60 @@
 
         
     const formRef=ref();
+    const loadding = ref(false);
+    // 修改密码相关
+    const passwordDialogVisible = ref(false);
+    const passwordFormRef = ref();
+    const passwordForm = ref({
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    });
+
+    const validateConfirmPassword = (_rule: any, value: any, callback: any) => {
+        if (value === '') {
+            callback(new Error('请再次输入新密码'));
+        } else if (value !== passwordForm.value.newPassword) {
+            callback(new Error('两次输入的新密码不一致'));
+        } else {
+            callback();
+        }
+    };
+
+    const passwordRules = {
+        oldPassword: [{ required: true, message: '请输入原密码', trigger: 'blur' }],
+        newPassword: [{ required: true, message: '请输入新密码', trigger: 'blur' }],
+        confirmPassword: [
+            { required: true, message: '请再次输入新密码', trigger: 'blur' },
+            { validator: validateConfirmPassword, trigger: 'blur' }
+        ]
+    };
+
+    // 打开修改密码弹窗
+    function showPasswordDialog() {
+        passwordForm.value = { oldPassword: '', newPassword: '', confirmPassword: '' };
+        passwordDialogVisible.value = true;
+        nextTick(() => {
+            passwordFormRef.value?.resetFields();
+        });
+    }
+
+    // 提交修改密码
+    function onSubmitPassword() {
+        passwordFormRef.value?.validate((valid: boolean) => {
+            if (!valid) return;
+            let sessionTable = Session.get("tableName")
+            request({
+                url: `${sessionTable}/updatePassword`,
+                method: 'post',
+                data: passwordForm.value
+            }).then((data: any) => {
+                notify('密码修改成功', { type: 'success' });
+                passwordDialogVisible.value = false;
+            });
+        });
+    }
+
     // 提交
     function onSubmit() {
         let sessionTable = Session.get("tableName")
@@ -267,16 +321,7 @@ function handleClick(tab:any){
                                             </el-upload>
                                         </el-form-item>
                                     </el-col>
-                                                                                            
-
-
-                                    <el-col :span="24">
-                                        <el-form-item class="input" label="密码" prop="mima"  :rules="{required: true, message: '密码为必填项！', trigger: 'blur'}" >
-                                            <el-input v-model="ruleForm.mima"
-                                                      placeholder="密码" clearable></el-input>
-                                        </el-form-item>
-                                    </el-col>
-                                                                                                                                <el-col :span="24">
+                                                                                                                                                                                                <el-col :span="24">
                                         <el-form-item class="input" label="性别" prop="xingbie"  :rules="{required: true, message: '性别为必填项！', trigger: 'blur'}" >
                                             <el-select v-model="ruleForm.xingbie" placeholder="请选择性别">
 
@@ -309,31 +354,35 @@ function handleClick(tab:any){
                                         </el-form-item>
                                     </el-col>
                                                             
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                         </el-row>
                         <el-form-item style="text-align: right;">
                             <el-button type="danger" class="submit-btn-red" @click="onSubmit">修改个人信息</el-button>
+                            <el-button type="danger" class="submit-btn-red" @click="showPasswordDialog">修改密码</el-button>
                         </el-form-item>
                     </el-form>
                 </div>
             </el-tab-pane>
 
+            <!-- 修改密码弹窗 -->
+            <el-dialog title="修改密码" v-model="passwordDialogVisible" width="450px" :close-on-click-modal="false">
+                <el-form ref="passwordFormRef" :model="passwordForm" :rules="passwordRules" label-width="100px">
+                    <el-form-item label="原密码" prop="oldPassword">
+                        <el-input v-model="passwordForm.oldPassword" type="password" placeholder="请输入原密码" show-password></el-input>
+                    </el-form-item>
+                    <el-form-item label="新密码" prop="newPassword">
+                        <el-input v-model="passwordForm.newPassword" type="password" placeholder="请输入新密码" show-password></el-input>
+                    </el-form-item>
+                    <el-form-item label="确认密码" prop="confirmPassword">
+                        <el-input v-model="passwordForm.confirmPassword" type="password" placeholder="请再次输入新密码" show-password></el-input>
+                    </el-form-item>
+                </el-form>
+                <template #footer>
+                    <span class="dialog-footer">
+                        <el-button @click="passwordDialogVisible = false">取 消</el-button>
+                        <el-button type="primary" @click="onSubmitPassword">确 定</el-button>
+                    </span>
+                </template>
+            </el-dialog>
 
         </el-tabs>
     </div>

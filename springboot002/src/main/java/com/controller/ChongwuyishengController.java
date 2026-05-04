@@ -163,7 +163,10 @@ public class ChongwuyishengController {
             // 获取修改前的医生信息
             ChongwuyishengEntity oldDoctor = chongwuyishengService.selectById(chongwuyisheng.getId());
             
-            chongwuyishengService.updateById(chongwuyisheng);//全部更新
+            // 安全加固：防止恶意用户通过修改个人信息接口篡改密码
+            chongwuyisheng.setMima(null);
+            
+            chongwuyishengService.updateById(chongwuyisheng);
             
             // ================== 添加的代码 开始 ==================
             // 同步更新咨询表中的冗余字段（医生姓名、头像）
@@ -292,8 +295,38 @@ public class ChongwuyishengController {
             Long id = (Long) request.getSession().getAttribute("userId");
             ChongwuyishengEntity user = chongwuyishengService.selectById(id);
             JSONObject json = (JSONObject)JSON.toJSON(user);
+            json.remove("mima");
             json.put("role", "chongwuyisheng");
             return R.ok().put("data", json);
+        }
+
+        /**
+         * 修改密码
+         */
+        @RequestMapping("/updatePassword")
+        public R updatePassword(@RequestBody Map<String, String> params, HttpServletRequest request) {
+            String oldPassword = params.get("oldPassword");
+            String newPassword = params.get("newPassword");
+            String confirmPassword = params.get("confirmPassword");
+
+            if (org.apache.commons.lang3.StringUtils.isBlank(oldPassword)) {
+                return R.error("原密码不能为空");
+            }
+            if (org.apache.commons.lang3.StringUtils.isBlank(newPassword)) {
+                return R.error("新密码不能为空");
+            }
+            if (!newPassword.equals(confirmPassword)) {
+                return R.error("两次输入的新密码不一致");
+            }
+
+            Long id = (Long) request.getSession().getAttribute("userId");
+            ChongwuyishengEntity user = chongwuyishengService.selectById(id);
+            if (!user.getMima().equals(oldPassword)) {
+                return R.error("原密码错误");
+            }
+            user.setMima(newPassword);
+            chongwuyishengService.updateById(user);
+            return R.ok("密码修改成功");
         }
 
         /**

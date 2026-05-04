@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -133,6 +134,7 @@ public class UserController{
     public R getCurrUser(HttpServletRequest request){
     	Long id = (Long)request.getSession().getAttribute("userId");
         UserEntity user = userService.selectById(id);
+        user.setPassword(null);
         return R.ok().put("data", user);
     }
 
@@ -155,8 +157,39 @@ public class UserController{
     @RequestMapping("/update")
     public R update(@RequestBody UserEntity user){
 //        ValidatorUtils.validateEntity(user);
-        userService.updateById(user);//全部更新
+        // 安全加固：防止恶意用户通过修改个人信息接口篡改密码
+        user.setPassword(null);
+        userService.updateById(user);
         return R.ok();
+    }
+
+    /**
+     * 修改密码
+     */
+    @RequestMapping("/updatePassword")
+    public R updatePassword(@RequestBody Map<String, String> params, HttpServletRequest request) {
+        String oldPassword = params.get("oldPassword");
+        String newPassword = params.get("newPassword");
+        String confirmPassword = params.get("confirmPassword");
+
+        if (org.apache.commons.lang3.StringUtils.isBlank(oldPassword)) {
+            return R.error("原密码不能为空");
+        }
+        if (org.apache.commons.lang3.StringUtils.isBlank(newPassword)) {
+            return R.error("新密码不能为空");
+        }
+        if (!newPassword.equals(confirmPassword)) {
+            return R.error("两次输入的新密码不一致");
+        }
+
+        Long id = (Long) request.getSession().getAttribute("userId");
+        UserEntity user = userService.selectById(id);
+        if (!user.getPassword().equals(oldPassword)) {
+            return R.error("原密码错误");
+        }
+        user.setPassword(newPassword);
+        userService.updateById(user);
+        return R.ok("密码修改成功");
     }
 
     /**

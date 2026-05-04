@@ -182,7 +182,11 @@
                               <span v-else>无图片</span>
                           </template>
                       </el-table-column>
-                                                                                                                          <el-table-column header-align="center"  align="center" prop="mima" label="密码"/>
+                                                                                                                          <el-table-column header-align="center"  align="center" label="密码">
+                          <template #default="{row}">
+                              <span>{{ row.mima ? '******' : '' }}</span>
+                          </template>
+                      </el-table-column>
                                                                                                                                                 <el-table-column header-align="center"  align="center" prop="xingbie" label="性别"/>
                                                                                                                                                 <el-table-column header-align="center"  align="center" prop="lianxifangshi" label="联系方式"/>
                                                                                                                                                 <el-table-column header-align="center"  align="center" prop="nicheng" label="昵称"/>

@@ -1,0 +1,9 @@
+git status                                                           查看有哪些文件被修改了
+git add .                                                             将所有改动添加到暂存区
+git commit -m "这里写你的更新说明"            给这次更新打上标签
+git push new_repo master                             推送到pett
+
+从github中下载旧版本
+git fetch origin
+git reset --hard new_repo/master
+git clean -fd

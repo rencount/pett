@@ -19,6 +19,10 @@ spring:
   resources:
     static-locations: classpath:static/,file:static/
 
+# 文件上传外部存储路径
+upload:
+  path: C:/Users/12460/Desktop/诊断系统/picture
+
 #mybatis
 mybatis-plus:
   mapper-locations: classpath*:mapper/*.xml

@@ -10,25 +10,6 @@
       </div>
       <!-- 登录表单 -->
       <form @submit.prevent="handleSubmit" class="space-y-6">
-        <!-- 角色选择 -->
-        <div class="flex items-center justify-center space-x-8">
-          <!-- <label class="flex items-center cursor-pointer" v-for="item in menus" type="radio">
-          <input v-if="item.tableName!='users' && item.roleName!='游客'" v-model="role" value="admin" class="w-4 h-4 text-blue-600">
-          <span v-if="item.tableName!='users' && item.roleName!='游客'" class="ml-2">{{item.roleName}}</span>
-          </label> -->
-          <label class="flex items-center cursor-pointer" v-for="item in menus" type="radio">
-            <span>
-              <input v-if="item.tableName != 'users' && item.roleName != '游客' && item.roleName != '宠物医生'" type="radio"
-                v-model="role" :value="item.roleName" class="w-4 h-4 text-blue-600">
-              <span v-if="item.tableName != 'users' && item.roleName != '游客' && item.roleName != '宠物医生'"
-                class="ml-2">{{ item.roleName }}</span>
-            </span>
-          </label>
-          <!-- <label class="flex items-center cursor-pointer">
-          <input type="radio" v-model="role" value="guest" class="w-4 h-4 text-blue-600">
-          <span class="ml-2">访客</span>
-          </label> -->
-        </div>
         <!-- 用户名输入框 -->
         <div class="relative">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -106,7 +87,6 @@ import { useAuthStore } from '@/stores/auth';
 import { useRouter, useRoute } from 'vue-router';
 import { Session } from '@/utils/storage';
 import type { FormRules } from 'element-plus/es/components/form/src/types';
-import { menu } from "@/utils/menu";
 
 
 const router = useRouter();
@@ -126,8 +106,6 @@ const state = reactive({
   dialogFormVisible: false
 });
 
-const menus = menu.list();
-
 const { loading, loginData, tableName, dialogFormVisible } = { ...toRefs(state) };
 function showlogin() {
   state.dialogFormVisible = true;
@@ -140,7 +118,6 @@ const authStore = useAuthStore();
 const showModal = ref(true);
 const username = ref('');
 const password = ref('');
-const role = ref('user');
 const captchaInput = ref('');
 const captchaCode = ref('');
 const captchaRotation = ref(0);
@@ -203,17 +180,8 @@ const handleSubmit = async () => {
   if (!validateForm()) return;
   isLoading.value = true;
   try {
-    // 模拟登录请求
-
-    state.loginData.role = role.value;
-
-    console.log(role.value);
-
-    for (let i = 0; i < menus.length; i++) {
-      if (menus[i].roleName == loginData.value.role) {
-        state.tableName = menus[i].tableName;
-      }
-    }
+    state.loginData.role = '用户';
+    state.tableName = 'yonghu';
 
     const res = await authStore.userLogin(state.loginData, `${state.tableName}/login`);
     // console.log('submitForm', res);

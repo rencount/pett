@@ -134,8 +134,39 @@ public class YonghuController {
                     @RequestMapping("/update")
         public R update(@RequestBody YonghuEntity yonghu, HttpServletRequest request) {
             //ValidatorUtils.validateEntity(zaixianbaoming);
-                yonghuService.updateById(yonghu);//全部更新
+            // 安全加固：防止恶意用户通过修改个人信息接口篡改密码
+            yonghu.setMima(null);
+                yonghuService.updateById(yonghu);
             return R.ok();
+        }
+
+        /**
+         * 修改密码
+         */
+        @RequestMapping("/updatePassword")
+        public R updatePassword(@RequestBody Map<String, String> params, HttpServletRequest request) {
+            String oldPassword = params.get("oldPassword");
+            String newPassword = params.get("newPassword");
+            String confirmPassword = params.get("confirmPassword");
+
+            if (org.apache.commons.lang3.StringUtils.isBlank(oldPassword)) {
+                return R.error("原密码不能为空");
+            }
+            if (org.apache.commons.lang3.StringUtils.isBlank(newPassword)) {
+                return R.error("新密码不能为空");
+            }
+            if (!newPassword.equals(confirmPassword)) {
+                return R.error("两次输入的新密码不一致");
+            }
+
+            Long id = (Long) request.getSession().getAttribute("userId");
+            YonghuEntity user = yonghuService.selectById(id);
+            if (!user.getMima().equals(oldPassword)) {
+                return R.error("原密码错误");
+            }
+            user.setMima(newPassword);
+            yonghuService.updateById(user);
+            return R.ok("密码修改成功");
         }
 
         /**
@@ -206,6 +237,7 @@ public class YonghuController {
             Long id = (Long) request.getSession().getAttribute("userId");
             YonghuEntity user = yonghuService.selectById(id);
             JSONObject json = (JSONObject)JSON.toJSON(user);
+            json.remove("mima");
             json.put("role", "yonghu");
             return R.ok().put("data", json);
         }
