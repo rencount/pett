@@ -23,12 +23,14 @@
         im_users: [],
         targetUserId: undefined,
         petInfoDialog: false,
-        petList: []
+        petList: [],
+        diseaseDialog: false,
+        diseaseList: []
     })
     
     const ragRef=ref();
     const ragRefInstance=ref();
-    const {id, ruleForm, dataList, userInfo, inter, open, im_users, targetUserId, petInfoDialog, petList} = {...toRefs(state)};
+    const {id, ruleForm, dataList, userInfo, inter, open, im_users, targetUserId, petInfoDialog, petList, diseaseDialog, diseaseList} = {...toRefs(state)};
     const selectedIndex = ref(null);
     const scrollableDiv = ref(null);
     const route = useRoute();
@@ -257,6 +259,31 @@
         state.petInfoDialog = false;
     }
 
+    // 查看疾病上传记录
+    function showDiseaseRecord(row) {
+        request({
+            url: 'jibingshangchuan/list',
+            method: 'get',
+            params: {
+                chongwumingcheng: row.chongwumingcheng
+            }
+        }).then((resp) => {
+            if (resp && resp.code === 0) {
+                state.diseaseList = resp.data.list || [];
+                state.diseaseDialog = true;
+            } else {
+                notify(resp.msg || '查询失败', {type:'error'});
+            }
+        }).catch((error) => {
+            notify('查询疾病记录失败', {type:'error'});
+        });
+    }
+
+    // 关闭疾病记录弹窗
+    function closeDiseaseDialog() {
+        state.diseaseDialog = false;
+    }
+
 </script>
 
 <template>
@@ -323,6 +350,11 @@
                 <el-table-column prop="xingbie" label="性别" width="80"></el-table-column>
                 <el-table-column prop="xihao" label="喜好" width="150" show-overflow-tooltip></el-table-column>
                 <el-table-column prop="xiangqing" label="详情" show-overflow-tooltip></el-table-column>
+                <el-table-column label="操作" width="140">
+                    <template #default="scope">
+                        <el-button size="mini" type="primary" @click="showDiseaseRecord(scope.row)">查看疾病记录</el-button>
+                    </template>
+                </el-table-column>
             </el-table>
         </div>
         <div v-else style="text-align: center; padding: 20px; color: #999;">
@@ -330,6 +362,37 @@
         </div>
         <template #footer>
             <el-button @click="closePetDialog">关闭</el-button>
+        </template>
+    </el-dialog>
+
+    <!-- 疾病上传记录弹窗 -->
+    <el-dialog title="疾病上传记录" v-model="diseaseDialog" width="900px" :before-close="closeDiseaseDialog">
+        <div v-if="diseaseList.length > 0">
+            <el-table :data="diseaseList" border style="width: 100%">
+                <el-table-column prop="chongwumingcheng" label="宠物名称" width="120"></el-table-column>
+                <el-table-column prop="bingqingmiaoshu" label="病情描述" show-overflow-tooltip></el-table-column>
+                <el-table-column label="图片" width="100">
+                    <template #default="scope">
+                        <el-image
+                            v-if="scope.row.tupianshangchuan"
+                            :src="scope.row.tupianshangchuan"
+                            style="width: 60px; height: 60px; object-fit: cover;"
+                            :preview-src-list="[scope.row.tupianshangchuan]"
+                            fit="cover"
+                        />
+                        <span v-else style="color: #999;">无图片</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="fabushijian" label="发布时间" width="120"></el-table-column>
+                <el-table-column prop="sfsh" label="审核状态" width="100"></el-table-column>
+                <el-table-column prop="shhf" label="审核回复" show-overflow-tooltip></el-table-column>
+            </el-table>
+        </div>
+        <div v-else style="text-align: center; padding: 20px; color: #999;">
+            该宠物暂无疾病上传记录
+        </div>
+        <template #footer>
+            <el-button @click="closeDiseaseDialog">关闭</el-button>
         </template>
     </el-dialog>
 </template>
