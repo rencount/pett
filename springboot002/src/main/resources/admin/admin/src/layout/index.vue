@@ -31,7 +31,14 @@ const response = request({
     method: 'POST'
 }).then(resp => {
     localStorage.setItem('user', JSON.stringify(resp.data));
-    state.users = resp.data;
+    state.users = {
+        id: resp.data.id || 0,
+        img: resp.data.touxiang || '',
+        uname: resp.data.nicheng || resp.data.username || resp.data.zhanghao || '',
+        type: 0,
+        nicheng: resp.data.nicheng || '',
+        role: resp.data.role || ''
+    };
     if(socketStore.socket === undefined || socketStore.socket == null || socketStore.socket.readyState === WebSocket.CLOSE) {
         socketStore.initializeSocket(state.users.id, state.users.nicheng, state.users.role)
     }

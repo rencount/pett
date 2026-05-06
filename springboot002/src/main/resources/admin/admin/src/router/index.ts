@@ -43,29 +43,6 @@ export const dynamicRoutes: RouteRecordRaw[] = [
 
                 ],
             },
-            {
-                path: "/updatePassword",
-                name: "updatePassword",
-                meta: {
-                    title: "修改密码",
-                    icon: "&#xe7fc;", // 图标
-                },
-                redirect:'/updatePassword',
-                children: [
-                    {
-                        path: "/updatePassword",
-                        name: "updatePassword",
-                        meta: {
-                            title: "修改密码",
-                            icon: "&#xe90f;", // 图标
-                        },
-                        component: () => import("@/views/update-password.vue"),
-                    },
-
-                ],
-            },
-
-
 
 
             

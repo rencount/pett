@@ -65,7 +65,7 @@ const toggleUserMenu = () => {
       <h1 class="text-xl text-white font-medium">{{globalTitle}}</h1>
     </div>
     <div class="flex items-center">
-      <img :src="avatarUrl" class="w-10 h-10 rounded-full cursor-pointer" @click="toggleUserMenu" />
+      <img :src="props.img || avatarUrl" class="w-10 h-10 rounded-full cursor-pointer" @click="toggleUserMenu" />
       <div v-if="showUserMenu" class="absolute top-16 right-6 bg-white shadow-lg rounded-lg py-2 w-40">
         <a @click="router.push('/center')" class="block px-4 py-2 hover:bg-gray-100">个人信息</a>
         <a @click="tc" class="block px-4 py-2 hover:bg-gray-100">退出登录</a>

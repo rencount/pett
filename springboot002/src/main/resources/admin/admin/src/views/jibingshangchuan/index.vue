@@ -188,7 +188,7 @@
     <el-card shadow="hover">
       <div class="header-section">
         <div class="header-title">
-                    <h3>疾病上传</h3>
+                    <h3>问诊记录</h3>
                   </div>
         <div class="action-buttons">
             <el-button v-if="isAuth('jibingshangchuan','新增')" icon="ele-Plus" type="primary" @click="add()">新增</el-button>
@@ -253,7 +253,7 @@
                           </el-table-column>
                           <!-- 审核回复列 -->
                           <el-table-column header-align="center"  align="center" prop="shhf" label="审核回复" min-width="150" show-overflow-tooltip/>
-                                                                          <el-table-column fixed="right" align="center" label="操作" width="250">
+                                                                          <el-table-column v-if="isAuth('jibingshangchuan','修改') || isAuth('jibingshangchuan','删除')" fixed="right" align="center" label="操作" width="250">
               <template #default="{row}">
                                                       <el-button v-if="isAuth('jibingshangchuan','修改')" icon="ele-Edit" @click.stop="handleEdit(row)" type="primary" link>修改</el-button>
                   <el-popconfirm  v-if="isAuth('jibingshangchuan','删除')"  width="auto" @confirm="handleDelete(row)"  :title="`确定要删除这条记录吗？`">

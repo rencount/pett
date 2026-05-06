@@ -16,17 +16,17 @@ const menu = {
             "backMenu": [{
                 "child": [{
                     "buttons": ["新增", "删除", "修改", "查看"],
-                    "menu": "问诊",
+                    "menu": "实时聊天",
                     "menuJump": "列表",
                     "tableName": "wenzhen"
-                }], "menu": "问诊"
+                }], "menu": "实时聊天"
             }, {
                 "child": [{
                     "buttons": ["查看"],
-                    "menu": "疾病上传",
+                    "menu": "回复问诊",
                     "menuJump": "列表",
                     "tableName": "jibingshangchuan"
-                }], "menu": "疾病上传"
+                }], "menu": "回复问诊"
             }, {
                 "child": [{
                     "buttons": ["查看", "修改", "删除"],
@@ -51,11 +51,11 @@ const menu = {
                 }], "menu": "宠物管理"
             }, {
                 "child": [{
-                    "buttons": ["查看","审核"],
-                    "menu": "疾病上传",
+                    "buttons": ["查看","审核","修改","删除"],
+                    "menu": "管理问诊",
                     "menuJump": "列表",
                     "tableName": "jibingshangchuan"
-                }], "menu": "疾病上传"
+                }], "menu": "管理问诊"
             },{
                 "child": [{
                     "buttons": ["新增", "删除", "修改", "查看"],
