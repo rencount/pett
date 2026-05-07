@@ -28,7 +28,7 @@
                                                                             chongwumingcheng:'',
                                                                     xingbie:'',
                                                 xihao:'',
-                                                                                                                                            
+
     },
     page:{
         current:1,
@@ -40,10 +40,11 @@
             isdel:true,
             diagnosisDialogVisible: false,
             diagnosisList: [],
+            diagnosisReportList: [],
             currentPetName: '',
-        
+
             })
-    const { query,tableList,page,isdel,diagnosisDialogVisible,diagnosisList,currentPetName
+    const { query,tableList,page,isdel,diagnosisDialogVisible,diagnosisList,diagnosisReportList,currentPetName
                                   } = {...toRefs(state)};
 
     //进入执行
@@ -165,9 +166,11 @@
         diseaseUploadRef.value.open('上传疾病信息', '', 'add', {chongwumingcheng: row.chongwumingcheng});
     }
 
-    // 显示诊断结果（显示疾病上传信息）
+    // 显示诊断结果（显示疾病上传信息 + 诊断报告）
     function showDiagnosis(row: any) {
         state.currentPetName = row.chongwumingcheng;
+        state.diagnosisList = [];
+        state.diagnosisReportList = [];
         // 根据宠物名称查询疾病上传信息
         request({
             url: 'jibingshangchuan/page',
@@ -176,11 +179,25 @@
                 page: 1,
                 limit: 100,
                 chongwumingcheng: row.chongwumingcheng,
-                sfsh: '是'  // 只显示审核通过的信息
+                sfsh: '是'
             }
         }).then(({data}) => {
             state.diagnosisList = data.list;
-            state.diagnosisDialogVisible = true;
+            // 查询诊断报告（按宠物名称匹配）
+            request({
+                url: 'zhenduan/list',
+                method: 'get',
+                params: {
+                    page: 1,
+                    limit: 100,
+                    chongwumingcheng: row.chongwumingcheng
+                }
+            }).then(({data}) => {
+                state.diagnosisReportList = data.list;
+                state.diagnosisDialogVisible = true;
+            }).catch(() => {
+                state.diagnosisDialogVisible = true;
+            });
         }).catch(() => {
             notify('获取诊断信息失败', {type: 'error'});
         });
@@ -335,26 +352,39 @@
         </div>
     </el-card>
 
-    <!-- 诊断结果对话框（显示疾病上传信息） -->
-    <el-dialog v-model="diagnosisDialogVisible" :title="'宠物【' + currentPetName + '】的诊断信息'" width="80%" destroy-on-close>
-        <el-table :data="diagnosisList" border stripe v-if="diagnosisList.length > 0">
+    <!-- 诊断结果对话框（显示疾病上传信息 + 诊断报告） -->
+    <el-dialog v-model="diagnosisDialogVisible" :title="'宠物【' + currentPetName + '】的诊断信息'" width="85%" destroy-on-close>
+        <!-- 疾病记录 -->
+        <h3 class="section-title">疾病记录</h3>
+        <el-table :data="diagnosisList" border stripe v-if="diagnosisList.length > 0" style="margin-bottom: 30px;">
             <el-table-column prop="chongwumingcheng" label="宠物名称" align="center" width="120"/>
-            <el-table-column prop="bingqingmiaoshu" label="病情描述" align="center" min-width="200" show-overflow-tooltip/>
+            <el-table-column prop="bingqingmiaoshu" label="病情描述" align="center" min-width="180" show-overflow-tooltip/>
             <el-table-column prop="tupianshangchuan" label="图片" align="center" width="120">
                 <template #default="{row}">
                     <el-image v-if="row.tupianshangchuan" :src="row.tupianshangchuan" style="width: 80px; height: 80px;" fit="cover" :preview-src-list="[row.tupianshangchuan]" preview-teleported/>
                     <span v-else>无图片</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="fabushijian" label="发布时间" align="center" width="180"/>
+            <el-table-column prop="fabushijian" label="发布时间" align="center" width="120"/>
             <el-table-column prop="sfsh" label="审核状态" align="center" width="100">
                 <template #default="{row}">
                     <el-tag type="success">已通过</el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="shhf" label="医生回复" align="center" min-width="200" show-overflow-tooltip/>
         </el-table>
-        <el-empty v-else description="暂无诊断信息" />
+        <el-empty v-if="diagnosisList.length === 0" description="暂无疾病记录" :image-size="60" />
+
+        <!-- 诊断报告 -->
+        <h3 class="section-title" style="margin-top: 30px;">诊断报告</h3>
+        <el-table :data="diagnosisReportList" border stripe v-if="diagnosisReportList.length > 0">
+            <el-table-column prop="chongwumingcheng" label="宠物名称" align="center" width="120"/>
+            <el-table-column prop="zhengzhuang" label="症状" align="center" min-width="200" show-overflow-tooltip/>
+            <el-table-column prop="zhiliaojianyi" label="治疗建议" align="center" min-width="250" show-overflow-tooltip/>
+            <el-table-column prop="zhenduanshijian" label="诊断时间" align="center" width="120"/>
+            <el-table-column prop="zhenduanren" label="诊断人" align="center" width="120"/>
+            <el-table-column prop="lianxifangshi" label="联系方式" align="center" width="140"/>
+        </el-table>
+        <el-empty v-if="diagnosisReportList.length === 0" description="暂无诊断报告，请等待医生回复" :image-size="60" />
     </el-dialog>
 
     </div>
@@ -362,5 +392,12 @@
 </template>
 
 <style scoped>
-
+.section-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #303133;
+  margin-bottom: 12px;
+  padding-left: 10px;
+  border-left: 4px solid #409eff;
+}
 </style>

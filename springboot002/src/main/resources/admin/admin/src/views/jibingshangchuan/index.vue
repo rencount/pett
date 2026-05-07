@@ -136,6 +136,20 @@
 
   const editRef=ref();
 
+  // 获取宠物医生信息（用于生成诊断报告）
+  const doctorInfo = ref<any>({});
+  if (currentRole === '宠物医生') {
+    const doctorTable = Session.get('tableName');
+    request({
+      url: doctorTable + '/session',
+      method: 'get'
+    }).then((data: any) => {
+      if (data && data.code === 0) {
+        doctorInfo.value = data.data;
+      }
+    });
+  }
+
 
       
 
@@ -155,6 +169,9 @@
         if (!state.formData.shhf) {
           state.formData.shhf = '';
         }
+        if (!state.formData.zhengzhuang) {
+          state.formData.zhengzhuang = '';
+        }
       }
 
       function shHandler(){
@@ -166,10 +183,32 @@
             method:'post',
             data:state.formData
           }).then((data)=>{
-            state.sfshVisiable=false;
-            const successMsg = currentRole === '宠物医生' ? "回复成功" : "操作成功";
-            notify(successMsg,{type:'success'});
-            getDateList();
+            // 宠物医生回复后，同时生成诊断报告
+            if (currentRole === '宠物医生') {
+              const today = new Date().toISOString().split('T')[0];
+              const zhenduanData = {
+                chongwumingcheng: state.formData.chongwumingcheng,
+                zhengzhuang: state.formData.zhengzhuang || '',
+                zhiliaojianyi: state.formData.shhf,
+                zhenduanshijian: today,
+                zhenduanren: Session.get('adminName') || '',
+                lianxifangshi: doctorInfo.value.lianxifangshi || '',
+                userid: state.formData.userid
+              };
+              request({
+                url:'zhenduan/save',
+                method:'post',
+                data: zhenduanData
+              }).then(() => {
+                state.sfshVisiable=false;
+                notify("回复成功，诊断报告已生成",{type:'success'});
+                getDateList();
+              });
+            } else {
+              state.sfshVisiable=false;
+              notify("操作成功",{type:'success'});
+              getDateList();
+            }
           })
 
         })
@@ -306,8 +345,11 @@
                 <el-form-item label="病情描述">
                     <el-input type="textarea" :rows="3" v-model="formData.bingqingmiaoshu" disabled></el-input>
                 </el-form-item>
-                <el-form-item label="回复内容">
-                    <el-input type="textarea" :rows="6" v-model="formData.shhf" placeholder="请输入您的专业回复..."></el-input>
+                <el-form-item label="症状">
+                    <el-input type="textarea" :rows="4" v-model="formData.zhengzhuang" placeholder="请输入症状诊断..."></el-input>
+                </el-form-item>
+                <el-form-item label="治疗建议">
+                    <el-input type="textarea" :rows="6" v-model="formData.shhf" placeholder="请输入治疗建议..."></el-input>
                 </el-form-item>
             </el-form>
             <template #footer>

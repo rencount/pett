@@ -27,7 +27,7 @@
                                                                             chongwumingcheng:'',
                                                 bingqingmiaoshu:'',
                                                                                         fabushijian:'',
-                                                                                
+
     },
     page:{
         current:1,
@@ -39,7 +39,8 @@
             isdel:true,
                         sfshVisiable:false,
                 formData:{},
-        
+        doctorInfo:{} as any,
+
             })
     const { query,tableList,page,isdel
                                     ,sfshVisiable,
@@ -56,8 +57,10 @@
         ) => {
             if (data && data.code === 0) {
 
-            // 如果是宠物医生，可以查看所有疾病信息，不设置userid过滤
-            if (sessionTable !== 'chongwuyisheng') {
+            // 如果是宠物医生，保存医生信息用于生成诊断报告
+            if (sessionTable === 'chongwuyisheng') {
+                state.doctorInfo = data.data;
+            } else {
                 state.query.userid=data.data.id;
             }
             getDateList();
@@ -180,6 +183,9 @@
             if (!state.formData.shhf) {
                 state.formData.shhf = '';
             }
+            if (!state.formData.zhengzhuang) {
+                state.formData.zhengzhuang = '';
+            }
         }
 
         function shHandler(){
@@ -190,9 +196,33 @@
                             method:'post',
                             data:state.formData
         }).then((data)=>{
+            // 宠物医生回复后，同时生成诊断报告
+            const sessionTable = Session.get('tableName');
+            if (sessionTable === 'chongwuyisheng') {
+              const today = new Date().toISOString().split('T')[0];
+              const zhenduanData = {
+                chongwumingcheng: state.formData.chongwumingcheng,
+                zhengzhuang: state.formData.zhengzhuang || '',
+                zhiliaojianyi: state.formData.shhf,
+                zhenduanshijian: today,
+                zhenduanren: state.doctorInfo.nicheng || state.doctorInfo.zhanghao || '',
+                lianxifangshi: state.doctorInfo.lianxifangshi || '',
+                userid: state.formData.userid
+              };
+              request({
+                url:'zhenduan/save',
+                method:'post',
+                data: zhenduanData
+              }).then(() => {
                 state.sfshVisiable=false;
-            notify("回复成功",{type:'success'});
-            getDateList();
+                notify("回复成功，诊断报告已生成",{type:'success'});
+                getDateList();
+              });
+            } else {
+              state.sfshVisiable=false;
+              notify("回复成功",{type:'success'});
+              getDateList();
+            }
         })
 
         })
@@ -352,8 +382,11 @@
                 <el-form-item label="病情描述">
                     <el-input type="textarea" :rows="3" v-model="formData.bingqingmiaoshu" disabled></el-input>
                 </el-form-item>
-                <el-form-item label="回复内容">
-                    <el-input type="textarea" :rows="6" v-model="formData.shhf" placeholder="请输入您的专业回复..."></el-input>
+                <el-form-item label="症状">
+                    <el-input type="textarea" :rows="4" v-model="formData.zhengzhuang" placeholder="请输入症状诊断..."></el-input>
+                </el-form-item>
+                <el-form-item label="治疗建议">
+                    <el-input type="textarea" :rows="6" v-model="formData.shhf" placeholder="请输入治疗建议..."></el-input>
                 </el-form-item>
             </el-form>
             <template #footer>

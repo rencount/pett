@@ -9,8 +9,8 @@ const menu = {
                     "tableName": "zixun"
                 }], "menu": "咨询"
             }, {
-                "child": [{ "buttons": ["查看"], "menu": "宠物资讯", "tableName": "news" }],
-                "menu": "宠物资讯"
+                "child": [{ "buttons": ["查看"], "menu": "公告资讯", "tableName": "news" }],
+                "menu": "公告资讯"
             }], "roleName": "用户", "tableName": "yonghu"
         }, {
             "backMenu": [{
@@ -35,11 +35,11 @@ const menu = {
                     "tableName": "discusszixun"
                 }], "menu": "咨询评论管理"
             }], "frontMenu": [{
-                "child": [{ "buttons": ["查看"], "menu": "宠物资讯", "tableName": "news" }],
-                "menu": "宠物资讯"
+                "child": [{ "buttons": ["查看"], "menu": "公告资讯", "tableName": "news" }],
+                "menu": "公告资讯"
             }, {
-                "child": [{ "buttons": ["查看"], "menu": "宠物资讯", "tableName": "news" }],
-                "menu": "宠物资讯"
+                "child": [{ "buttons": ["查看"], "menu": "公告资讯", "tableName": "news" }],
+                "menu": "公告资讯"
             }], "roleName": "宠物医生", "tableName": "chongwuyisheng"
         }, {
             "backMenu": [{
@@ -73,24 +73,10 @@ const menu = {
             }, {
                 "child": [{
                     "buttons": ["查看", "修改", "删除"],
-                    "menu": "学习管理评论",
-                    "menuJump": "列表",
-                    "tableName": "discussxuexiguanli"
-                }], "menu": "学习管理评论"
-            }, {
-                "child": [{
-                    "buttons": ["查看", "修改", "删除"],
                     "menu": "咨询评论管理",
                     "menuJump": "列表",
                     "tableName": "discusszixun"
                 }], "menu": "咨询评论管理"
-            }, {
-                "child": [{
-                    "buttons": ["新增", "删除", "修改", "查看"],
-                    "menu": "学习管理",
-                    "menuJump": "列表",
-                    "tableName": "xuexiguanli"
-                }], "menu": "学习管理"
             }, {
                 "child": [{
                     "buttons": ["新增", "查看", "修改", "删除"],
@@ -98,14 +84,14 @@ const menu = {
                     "tableName": "config"
                 }, {
                     "buttons": ["新增", "查看", "修改", "删除"],
-                    "menu": "宠物资讯", "tableName": "news"
+                    "menu": "公告资讯", "tableName": "news"
                 }],
                 "menu": "系统管理"
             }], "roleName": "管理员", "tableName": "users"
         }, {
             "ykMenu": [{
-                "child": [{ "buttons": ["查看"], "menu": "宠物资讯", "tableName": "news" }],
-                "menu": "宠物资讯"
+                "child": [{ "buttons": ["查看"], "menu": "公告资讯", "tableName": "news" }],
+                "menu": "公告资讯"
             }], "roleName": "游客", "tableName": "游客"
         }]
     }

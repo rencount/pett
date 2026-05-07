@@ -45,7 +45,7 @@
 
                                                                   <button @click="wd" class="flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 transition-colors !rounded-button whitespace-nowrap">
                                     <i class="fas fa-share-alt"></i>
-                                    <span>问 诊</span>
+                                    <span>发起聊天</span>
                                   </button>
                                                                                     
 

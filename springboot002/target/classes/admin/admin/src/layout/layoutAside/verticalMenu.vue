@@ -101,12 +101,6 @@ const toggleSubmenu = (menu: string) => {
             <template #title>个人中心</template>
           </el-menu-item>
 
-          <!-- 修改密码 -->
-          <el-menu-item index="/updatePassword">
-            <el-icon><ele-Key /></el-icon>
-            <template #title>修改密码</template>
-          </el-menu-item>
-
           <!-- 动态菜单 -->
           <template v-for="(menu, menuIndex) in item.backMenu" :key="menu.menu">
             <el-sub-menu v-if="menu.child.length > 1" :index="`/${menu.child[0].tableName}`">

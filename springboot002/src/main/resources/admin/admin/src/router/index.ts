@@ -94,33 +94,10 @@ export const dynamicRoutes: RouteRecordRaw[] = [
                 
             
                                     {
-                        path: "/wodeshouzangguanli",
-                        name: "wodeshouzangguanli",
-                        meta: {
-                            title: "我的收藏",
-                            icon: "&#xe7fc;", // 图标
-                        },
-                        redirect:'/wodeshouzangguanli',
-                        children: [
-                            {
-                                path: "/wodeshouzangguanli",
-                                name: "wodeshouzangguanli",
-                                meta: {
-                                    title: "我的收藏",
-                                    icon: "&#xe90f;", // 图标
-                                },
-                                component: () => import("@/views/storeup/index.vue"),
-                            },
-
-                        ],
-                    },
-                
-            
-                                    {
                         path: "/news",
                         name: "news",
                         meta: {
-                            title: "宠物资讯",
+                            title: "公告资讯",
                             icon: "&#xe7fc;", // 图标
                         },
                         redirect:'/news',
@@ -129,7 +106,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
                                 path: "/news",
                                 name: "news",
                                 meta: {
-                                    title: "宠物资讯",
+                                    title: "公告资讯",
                                     icon: "&#xe90f;", // 图标
                                 },
                                 component: () => import("@/views/news/index.vue"),
@@ -191,50 +168,6 @@ export const dynamicRoutes: RouteRecordRaw[] = [
 
                 
             
-                                    {
-                        path: "/xuexiguanli",
-                        name: "xuexiguanli",
-                        meta: {
-                            title: "学习管理",
-                            icon: "&#xe7fc;", // 图标
-                        },
-                        redirect:'/xuexiguanli',
-                        children: [
-                            {
-                                path: "/xuexiguanli",
-                                name: "xuexiguanli",
-                                meta: {
-                                    title: "学习管理",
-                                    icon: "&#xe90f;", // 图标
-                                },
-                                component: () => import("@/views/xuexiguanli/index.vue"),
-                            },
-
-                        ],
-                    },
-                
-            
-                                    {
-                        path: "/discussxuexiguanli",
-                        name: "/discussxuexiguanli",
-                        meta: {
-                            title: "学习管理评论",
-                            icon: "&#xe7fc;", // 图标
-                        },
-                        redirect:'/discussxuexiguanli',
-                        children: [
-                            {
-                                path: "/discussxuexiguanli",
-                                name: "discussxuexiguanli",
-                                meta: {
-                                    title: "学习管理评论",
-                                    icon: "&#xe90f;", // 图标
-                                },
-                                component: () => import("@/views/discussxuexiguanli/index.vue"),
-                            },
-
-                        ],
-                    },
 
 
 

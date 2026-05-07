@@ -83,8 +83,8 @@
 
   <div class="min-h-screen bg-gradient-to-b from-pink-50 via-purple-50 to-blue-50 py-20">
     <div class="max-w-7xl mx-auto px-4">
-      <h2 class="text-4xl font-bold text-center mb-4 text-pink-600">📰 宠物健康资讯</h2>
-      <p class="text-gray-600 text-center mb-12 text-lg">了解最新的宠物健康知识和养护技巧</p>
+      <h2 class="text-4xl font-bold text-center mb-4 text-pink-600">📢 公告资讯</h2>
+      <p class="text-gray-600 text-center mb-12 text-lg">了解最新的公告和资讯动态</p>
       <div class="grid grid-cols-2 gap-8">
 
 

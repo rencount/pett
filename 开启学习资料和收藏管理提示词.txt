@@ -1,0 +1,306 @@
+请在前端代码中恢复“学习资料”（学习管理）和“我的收藏管理”功能的入口，具体操作如下：
+
+## 一、管理后台前端（src/main/resources/admin/admin/src/）
+
+### 1. 恢复路由（router/index.ts）
+
+在 dynamicRoutes 数组的 children 中，按以下位置恢复：
+
+**位置A：在“问诊”路由块之后、“宠物资讯”路由块之前，添加“我的收藏”路由：**
+
+```
+                                    {
+                        path: "/wodeshouzangguanli",
+                        name: "wodeshouzangguanli",
+                        meta: {
+                            title: "我的收藏",
+                            icon: "&#xe7fc;",
+                        },
+                        redirect:'/wodeshouzangguanli',
+                        children: [
+                            {
+                                path: "/wodeshouzangguanli",
+                                name: "wodeshouzangguanli",
+                                meta: {
+                                    title: "我的收藏",
+                                    icon: "&#xe90f;",
+                                },
+                                component: () => import("@/views/storeup/index.vue"),
+                            },
+
+                        ],
+                    },
+
+
+```
+
+**位置B：在“宠物管理评论”路由块之后、“疾病上传”路由块之前，添加“学习管理”路由：**
+
+```
+                                    {
+                        path: "/xuexiguanli",
+                        name: "xuexiguanli",
+                        meta: {
+                            title: "学习管理",
+                            icon: "&#xe7fc;",
+                        },
+                        redirect:'/xuexiguanli',
+                        children: [
+                            {
+                                path: "/xuexiguanli",
+                                name: "xuexiguanli",
+                                meta: {
+                                    title: "学习管理",
+                                    icon: "&#xe90f;",
+                                },
+                                component: () => import("@/views/xuexiguanli/index.vue"),
+                            },
+
+                        ],
+                    },
+
+
+```
+
+**位置C：在“学习管理”路由块之后，添加“学习管理评论”路由：**
+
+```
+                                    {
+                        path: "/discussxuexiguanli",
+                        name: "/discussxuexiguanli",
+                        meta: {
+                            title: "学习管理评论",
+                            icon: "&#xe7fc;",
+                        },
+                        redirect:'/discussxuexiguanli',
+                        children: [
+                            {
+                                path: "/discussxuexiguanli",
+                                name: "discussxuexiguanli",
+                                meta: {
+                                    title: "学习管理评论",
+                                    icon: "&#xe90f;",
+                                },
+                                component: () => import("@/views/discussxuexiguanli/index.vue"),
+                            },
+
+                        ],
+                    },
+```
+
+### 2. 恢复菜单（utils/menu.ts）
+
+在管理员角色（roleName: "管理员"）的 backMenu 数组中：
+
+**在“宠物医生”条目之后、“咨询评论管理”条目之前，添加“学习管理评论”：**
+
+```
+, {
+                "child": [{
+                    "buttons": ["查看", "修改", "删除"],
+                    "menu": "学习管理评论",
+                    "menuJump": "列表",
+                    "tableName": "discussxuexiguanli"
+                }], "menu": "学习管理评论"
+            }
+```
+
+**在“学习管理评论”条目之后，添加“学习管理”：**
+
+```
+, {
+                "child": [{
+                    "buttons": ["新增", "删除", "修改", "查看"],
+                    "menu": "学习管理",
+                    "menuJump": "列表",
+                    "tableName": "xuexiguanli"
+                }], "menu": "学习管理"
+            }
+```
+
+注意：两个条目都在“咨询评论管理”条目之前，“系统管理”条目之前。
+
+## 二、用户前台前端（src/main/resources/front/front/src/）
+
+### 3. 恢复路由（router/index.ts）
+
+**位置A：在“个人信息”路由块之后、“宠物资讯”路由块之前，添加“我的收藏”路由：**
+
+```
+                                                {
+                        path: "/wodeshouzangguanli",
+                        name: "wodeshouzangguanli",
+                        meta: {
+                            title: "我的收藏",
+                            icon: "&#xe7fc;",
+                        },
+                        redirect:'/wodeshouzangguanli',
+                        children: [
+                            {
+                                path: "/wodeshouzangguanli",
+                                name: "wodeshouzangguanli",
+                                meta: {
+                                    title: "我的收藏",
+                                    icon: "&#xe90f;",
+                                },
+                                component: () => import("@/views/storeup/index.vue"),
+                            },
+                            {
+                                path: "/wodeshouzangguanlilist",
+                                name: "wodeshouzangguanlilist",
+                                meta: {
+                                    title: "我的收藏管理",
+                                    icon: "&#xe90f;",
+                                },
+                                component: () => import("@/views/storeup/list.vue"),
+                            },
+
+                        ],
+                    },
+
+```
+
+**位置B：在“宠物管理评论”路由块之后、“疾病上传”路由块之前，添加“学习管理”路由：**
+
+```
+                        {
+                            path: "/xuexiguanli",
+                            name: "xuexiguanli",
+                            meta: {
+                                title: "学习管理",
+                                icon: "&#xe7fc;",
+                            },
+                            redirect:'/xuexiguanli',
+                            children: [
+                                {
+                                    path: "/xuexiguanli",
+                                    name: "xuexiguanli",
+                                    meta: {
+                                        title: "学习管理",
+                                        icon: "&#xe90f;",
+                                    },
+                                    component: () => import("@/views/xuexiguanli/index.vue"),
+                                },
+                                {
+                                    path: "/xuexiguanlidetail/:id",
+                                    name: "xuexiguanlidetail",
+                                    meta: {
+                                        title: "学习管理",
+                                        icon: "&#xe90f;",
+                                    },
+                                    component: () => import("@/views/xuexiguanli/detail.vue"),
+                                },
+                                {
+                                    path: "/xuexiguanlilist",
+                                    name: "xuexiguanlilist",
+                                    meta: {
+                                        title: "学习管理",
+                                        icon: "&#xe90f;",
+                                    },
+                                    component: () => import("@/views/xuexiguanli/list.vue"),
+                                },
+
+                            ],
+                        },
+
+```
+
+**位置C：在“学习管理”路由块之后、“疾病上传”路由块之前，添加“学习管理评论”路由：**
+
+```
+                                                {
+                        path: "/discussxuexiguanli",
+                        name: "/discussxuexiguanli",
+                        meta: {
+                            title: "学习管理评论",
+                            icon: "&#xe7fc;",
+                        },
+                        redirect:'/discussxuexiguanli',
+                        children: [
+                            {
+                                path: "/discussxuexiguanli",
+                                name: "discussxuexiguanli",
+                                meta: {
+                                    title: "学习管理评论",
+                                    icon: "&#xe90f;",
+                                },
+                                component: () => import("@/views/discussxuexiguanli/index.vue"),
+                            },
+
+                        ],
+                    },
+
+
+
+```
+
+### 4. 恢复菜单（utils/menu.ts）
+
+**操作A：在用户角色（roleName: "用户"）的 frontMenu 中，在“咨询”条目之后、“宠物资讯”条目之前，添加“学习管理”：**
+
+```
+, {
+                "child": [{
+                    "buttons": ["查看"],
+                    "menu": "学习管理",
+                    "menuJump": "列表",
+                    "tableName": "xuexiguanli"
+                }], "menu": "学习管理"
+            }
+```
+
+**操作B：在管理员角色（roleName: "管理员"）的 backMenu 中，在“宠物医生”条目之后，添加“学习管理评论”：**
+
+```
+, {
+                "child": [{
+                    "buttons": ["查看", "修改", "删除"],
+                    "menu": "学习管理评论",
+                    "menuJump": "列表",
+                    "tableName": "discussxuexiguanli"
+                }], "menu": "学习管理评论"
+            }
+```
+
+**操作C：在管理员角色（roleName: "管理员"）的 backMenu 中，在“学习管理评论”条目之后，添加“学习管理”：**
+
+```
+, {
+                "child": [{
+                    "buttons": ["新增", "删除", "修改", "查看"],
+                    "menu": "学习管理",
+                    "menuJump": "列表",
+                    "tableName": "xuexiguanli"
+                }], "menu": "学习管理"
+            }
+```
+
+注意：操作B和操作C的两个条目都在“系统管理”条目之前。
+
+**操作D：在 geren 对象的 list() 返回数组中，在“宠物管理”条目之后，添加“我的收藏管理”：**
+
+```
+,{
+                "child": [{
+                    "buttons": ["新增", "删除", "修改", "查看"],
+                    "menu": "我的收藏管理",
+                    "menuJump": "列表",
+                    "tableName": "wodeshouzangguanli"
+                }], "menu": "我的收藏管理"
+            }
+```
+
+## 三、同步 target/classes 目录
+
+完成上述所有修改后，将 src/main/resources 下的修改同步到 target/classes 对应目录：
+
+- admin 路由和菜单：复制到 target/classes/admin/admin/src/
+- front 路由和菜单：复制到 target/classes/front/front/src/
+
+## 四、验证
+
+恢复完成后，请确认：
+1. 管理后台侧边栏中出现“学习管理”和“学习管理评论”菜单项
+2. 用户前台导航栏中出现“学习管理”入口
+3. 用户个人中心页面出现“我的收藏管理”标签页
+4. 所有路由可以正常跳转

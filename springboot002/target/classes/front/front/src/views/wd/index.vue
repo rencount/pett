@@ -21,11 +21,12 @@
     im_users: [],
     targetUserId: undefined,
     targetUserNicheng: '',
+    targetAvatar: '',
   })
 
   const ragRef=ref();
   const ragRefInstance=ref();
-  const {id,ruleForm,dataList,userInfo,inter,open, im_users, targetUserId, targetUserNicheng} = {...toRefs(state)};
+  const {id,ruleForm,dataList,userInfo,inter,open, im_users, targetUserId, targetUserNicheng, targetAvatar} = {...toRefs(state)};
   const selectedIndex = ref(null);
   const scrollableDiv = ref(null);
 
@@ -50,6 +51,7 @@
     state.im_users = []
     state.targetUserId = detail.userid
     state.targetUserNicheng = detail.chongwuyisheng
+    state.targetAvatar = detail.touxiang || ''
     getHistoryMsg();
     state.open = true;
   }
@@ -75,14 +77,15 @@
 
   function onSubmit(){
     if (state.ruleForm.ask != undefined && state.ruleForm.ask != '') {
-      state.dataList.push({'ask': state.ruleForm.ask, 'nickname': state.userInfo.nicheng, 'sendTime': getCurrentDateTime()});
+      state.dataList.push({'ask': state.ruleForm.ask, 'nickname': state.userInfo.nicheng, 'sendTime': getCurrentDateTime(), 'avatar': state.userInfo.touxiang || ''});
 
       socket.send(JSON.stringify({
         type: 'MESSAGE',
         srcUserId: state.userInfo.id,
         srcUserNicheng: state.userInfo.nicheng,
         targetUserId: state.targetUserId,  //给谁发消息
-        msg: state.ruleForm.ask
+        msg: state.ruleForm.ask,
+        avatar: state.userInfo.touxiang || ''
       }));
       state.ruleForm.ask = '';
       scrollToBottom();
@@ -95,7 +98,7 @@
     if (data.type === 'MESSAGE') {
       console.log('收到消息', data)
       // console.log(state.dataList)
-      state.dataList.push({'reply': data['msg'], 'nickname': data['srcUserNichengStr'], 'sendTime': data['sendTime']});
+      state.dataList.push({'reply': data['msg'], 'nickname': data['srcUserNichengStr'], 'sendTime': data['sendTime'], 'avatar': data['avatar'] || ''});
       scrollToBottom();
     }
     if (data.type === 'JOIN') {
@@ -119,9 +122,9 @@
 
       for (let i = 0; i < data.length; i++) {
         if(data[i]['sender'] != state.userInfo.id) {
-          state.dataList.push({'reply': data[i]['msg'], 'nickname': data[i]['senderName'], 'sendTime': data[i]['sendTime']});
+          state.dataList.push({'reply': data[i]['msg'], 'nickname': data[i]['senderName'], 'sendTime': data[i]['sendTime'], 'avatar': data[i]['avatar'] || ''});
         } else {
-          state.dataList.push({'ask': data[i]['msg'], 'nickname': data[i]['senderName'], 'sendTime': data[i]['sendTime']});
+          state.dataList.push({'ask': data[i]['msg'], 'nickname': data[i]['senderName'], 'sendTime': data[i]['sendTime'], 'avatar': data[i]['avatar'] || ''});
         }
       }
     })
@@ -173,7 +176,7 @@
         <div style="width: 200px; height: 100%; border: 1px; background-color: white;">
           <div class="selectable-div" >
             <div style="width: 150px; display: flex; justify-content: center; align-items: center;">
-              <img src="../../assets/avatar2.jpg" style="width: 30px; height:30px; border-radius: 20px;"/>
+              <img :src="targetAvatar || '../../assets/avatar2.jpg'" style="width: 30px; height:30px; border-radius: 20px;"/>
               <!--              <el-badge :value="user.unread_msg_count" class="item">-->
               <div style="min-width: 50px; width: auto;">{{targetUserNicheng}}</div>
               <!--              </el-badge>-->
@@ -184,13 +187,19 @@
         <div style="background-color: lightblue; height:100%; display: flex; flex-direction: column; justify-content: center; width: 100%;">
           <div class="chat-content" ref="scrollableDiv">
             <div style="width: 100%;" v-for="item in dataList">
-              <div v-if="item.ask" class="right-content" >
-                <div style="font-size: 12px; font-family: '微软雅黑 Light'; font-weight: bold; margin-bottom: 5px; text-align: right;">{{item.nickname}} {{item.sendTime}}</div>
-                <el-alert class="text-content" :title="item.ask" :closable="false" style="color: black; font-size: 16px;" ></el-alert>
+              <div v-if="item.ask" class="message-row message-self" >
+                <div class="message-bubble">
+                  <div style="font-size: 12px; font-family: '微软雅黑 Light'; font-weight: bold; margin-bottom: 5px; text-align: right;">{{item.nickname}} {{item.sendTime}}</div>
+                  <el-alert class="text-content" :title="item.ask" :closable="false" style="color: black; font-size: 16px;" ></el-alert>
+                </div>
+                <img :src="item.avatar || state.userInfo.touxiang || '../../assets/avatar2.jpg'" class="chat-avatar" />
               </div>
-              <div v-else class="left-content" >
-                <div style="font-size: 12px; font-family: '微软雅黑 Light'; font-weight: bold; margin-bottom: 5px; text-align: left;">{{item.nickname}} {{item.sendTime}}</div>
-                <el-alert class="text-content" :title="item.reply" :closable="false" style="color: black; font-size: 16px;" ></el-alert>
+              <div v-else class="message-row message-other" >
+                <img :src="item.avatar || '../../assets/avatar2.jpg'" class="chat-avatar" />
+                <div class="message-bubble">
+                  <div style="font-size: 12px; font-family: '微软雅黑 Light'; font-weight: bold; margin-bottom: 5px; text-align: left;">{{item.nickname}} {{item.sendTime}}</div>
+                  <el-alert class="text-content" :title="item.reply" :closable="false" style="color: black; font-size: 16px;" ></el-alert>
+                </div>
               </div>
             </div>
           </div>
@@ -240,6 +249,33 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+  }
+  .message-row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .message-self {
+    justify-content: flex-end;
+  }
+  .message-other {
+    justify-content: flex-start;
+  }
+  .chat-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .message-self .chat-avatar {
+    margin-left: 10px;
+  }
+  .message-other .chat-avatar {
+    margin-right: 10px;
+  }
+  .message-bubble {
+    max-width: 60%;
   }
   .left-content {
     float: left;

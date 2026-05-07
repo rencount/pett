@@ -117,6 +117,30 @@
         state.visible=false;
     }
 
+    // 检测宠物名称是否重复
+    function checkDuplicateName(){
+        const name = state.formData.chongwumingcheng;
+        if (!name || name.trim() === '') return;
+        const params: any = { page: 1, limit: 1, chongwumingcheng: name };
+        // 如果有userid则按用户过滤
+        if (state.formData.userid) {
+            params.userid = state.formData.userid;
+        }
+        request({
+            url: 'chongwuguanli/page',
+            method: 'get',
+            params
+        }).then(({data}) => {
+            if (data.list && data.list.length > 0) {
+                const isEdit = state.type === 'up' && data.list[0].id === state.formData.id;
+                if (!isEdit) {
+                    notify('宠物名称重复，请换一个',{type:'error'});
+                    state.formData.chongwumingcheng = '';
+                }
+            }
+        });
+    }
+
     function submitForm(){
         formRef.value?.validate((valid:boolean)=>{
 
@@ -229,7 +253,7 @@
             >
                                                                                                             
                         <el-form-item label="宠物名称" prop="chongwumingcheng" :rules="{required: true, message: '宠物名称为必填项！', trigger: 'blur'}">
-                            <el-input v-model="formData.chongwumingcheng" maxlength="30" clearable show-word-limit placeholder="请输入宠物名称" :readonly="roisfalg.chongwumingcheng"/>
+                            <el-input v-model="formData.chongwumingcheng" maxlength="30" clearable show-word-limit placeholder="请输入宠物名称" :readonly="roisfalg.chongwumingcheng" @blur="checkDuplicateName"/>
                         </el-form-item>
                                                                                                                         
 

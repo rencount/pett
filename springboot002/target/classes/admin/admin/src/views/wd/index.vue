@@ -23,12 +23,14 @@
         im_users: [],
         targetUserId: undefined,
         petInfoDialog: false,
-        petList: []
+        petList: [],
+        diseaseDialog: false,
+        diseaseList: []
     })
     
     const ragRef=ref();
     const ragRefInstance=ref();
-    const {id, ruleForm, dataList, userInfo, inter, open, im_users, targetUserId, petInfoDialog, petList} = {...toRefs(state)};
+    const {id, ruleForm, dataList, userInfo, inter, open, im_users, targetUserId, petInfoDialog, petList, diseaseDialog, diseaseList} = {...toRefs(state)};
     const selectedIndex = ref(null);
     const scrollableDiv = ref(null);
     const route = useRoute();
@@ -49,14 +51,15 @@
             return;
         }
         if (state.ruleForm.ask != undefined && state.ruleForm.ask != '') {
-            state.dataList.push({'userId': parseInt(state.targetUserId), 'nickname': state.userInfo.nicheng, 'ask': state.ruleForm.ask, 'sendTime': getCurrentDateTime()});
-            
+            state.dataList.push({'userId': parseInt(state.targetUserId), 'nickname': state.userInfo.nicheng, 'ask': state.ruleForm.ask, 'sendTime': getCurrentDateTime(), 'avatar': state.userInfo.touxiang || ''});
+
             socket.send(JSON.stringify({
                 type: 'MESSAGE',
                 srcUserId: state.userInfo.id,
                 srcUserNicheng: state.userInfo.nicheng,
                 targetUserId: state.targetUserId,  //给谁发消息
-                msg: state.ruleForm.ask
+                msg: state.ruleForm.ask,
+                avatar: state.userInfo.touxiang || ''
             }));
             state.ruleForm.ask = '';
             scrollToBottom();
@@ -85,23 +88,24 @@
                 let im_user = {}
                 im_user['nicheng'] = data.srcUserNichengStr
                 im_user['userId'] = parseInt(data.srcUserIdStr)
+                im_user['avatar'] = data.avatar || ''
                 if (state.targetUserId != data.srcUserIdStr) {
                     im_user['unread_msg_count'] = 1
                 }
                 state.im_users.push(im_user)
             }
-            
+
             if (state.targetUserId == data.srcUserIdStr && route.path == '/wenzhen') {
                 request({
                     url:`consultation/update`,
                     method:'POST',
                     data: {sender: data.srcUserIdStr}
                 }).then(resp => {
-                    state.dataList.push({'userId': parseInt(data.srcUserIdStr), 'nickname': data.srcUserNichengStr, 'reply': data.msg, 'sendTime': data.sendTime});
+                    state.dataList.push({'userId': parseInt(data.srcUserIdStr), 'nickname': data.srcUserNichengStr, 'reply': data.msg, 'sendTime': data.sendTime, 'avatar': data.avatar || ''});
                     scrollToBottom();
                 })
             } else {
-                state.dataList.push({'userId': parseInt(data.srcUserIdStr), 'nickname': data.srcUserNichengStr, 'reply': data.msg, 'sendTime': data.sendTime});
+                state.dataList.push({'userId': parseInt(data.srcUserIdStr), 'nickname': data.srcUserNichengStr, 'reply': data.msg, 'sendTime': data.sendTime, 'avatar': data.avatar || ''});
             }
         }
     };
@@ -138,17 +142,19 @@
                     acc[senderId] = {
                         userId: senderId,
                         nicheng: message.senderName,
-                        unread_msg_count: 0
+                        unread_msg_count: 0,
+                        avatar: message.avatar || ''
                     };
                 }
                 if (senderId != state.userInfo.id && message.readStatus === 0) {
                     acc[senderId].unread_msg_count++;
-                    
+
                 } else if (senderId != state.userInfo.id && message.readStatus === 1) {
                     acc[senderId] = {
                         userId: senderId,
                         nicheng: message.senderName,
-                        unread_msg_count: ''
+                        unread_msg_count: '',
+                        avatar: message.avatar || ''
                     };
                 }
                 return acc;
@@ -160,9 +166,9 @@
             
             for (let i = 0; i < data.length; i++) {
                 if(data[i]['sender'] != state.userInfo.id) {
-                    state.dataList.push({'userId': parseInt(data[i]['sender']), 'nickname': data[i]['senderName'], 'reply': data[i]['msg'], 'sendTime': data[i]['sendTime']});
+                    state.dataList.push({'userId': parseInt(data[i]['sender']), 'nickname': data[i]['senderName'], 'reply': data[i]['msg'], 'sendTime': data[i]['sendTime'], 'avatar': data[i]['avatar'] || ''});
                 } else {
-                    state.dataList.push({'userId': parseInt(data[i]['receiver']), 'nickname': state.userInfo.nicheng, 'ask': data[i]['msg'], 'sendTime': data[i]['sendTime']});
+                    state.dataList.push({'userId': parseInt(data[i]['receiver']), 'nickname': state.userInfo.nicheng, 'ask': data[i]['msg'], 'sendTime': data[i]['sendTime'], 'avatar': data[i]['avatar'] || ''});
                 }
             }
         })
@@ -253,6 +259,31 @@
         state.petInfoDialog = false;
     }
 
+    // 查看疾病上传记录
+    function showDiseaseRecord(row) {
+        request({
+            url: 'jibingshangchuan/list',
+            method: 'get',
+            params: {
+                chongwumingcheng: row.chongwumingcheng
+            }
+        }).then((resp) => {
+            if (resp && resp.code === 0) {
+                state.diseaseList = resp.data.list || [];
+                state.diseaseDialog = true;
+            } else {
+                notify(resp.msg || '查询失败', {type:'error'});
+            }
+        }).catch((error) => {
+            notify('查询疾病记录失败', {type:'error'});
+        });
+    }
+
+    // 关闭疾病记录弹窗
+    function closeDiseaseDialog() {
+        state.diseaseDialog = false;
+    }
+
 </script>
 
 <template>
@@ -262,7 +293,7 @@
             <div style="width: 200px; height: 100%; border: 1px; background-color: white;">
                 <div class="selectable-div" v-for="(user, index) in im_users" :key="index" :class="{ selected: selectedIndex === index }" @click="setTargetUser(user.userId, index)">
                     <div style="width: 150px; display: flex; justify-content: center; align-items: center;">
-                        <img src="../../assets/avatar2.jpg" style="width: 30px; height:30px; border-radius: 20px;"/>
+                        <img :src="user.avatar || '../../assets/avatar2.jpg'" style="width: 30px; height:30px; border-radius: 20px;"/>
                         <el-badge :value="user.unread_msg_count" class="item">
                             <div style="min-width: 50px; width: auto;">{{user.nicheng}}</div>
                         </el-badge>
@@ -273,13 +304,19 @@
             <div style="background-color: lightblue; height:100%; display: flex; flex-direction: column; justify-content: center; width: 100%;">
                 <div class="chat-content" ref="scrollableDiv">
                     <div style="width: 100%;" v-bind:key="item.id" v-for="item in dataList" v-show="item.userId == state.targetUserId">
-                        <div v-if="item.ask" class="right-content" >
-                            <div style="font-size: 12px; font-family: '微软雅黑 Light'; font-weight: bold; margin-bottom: 5px;text-align:right;">{{item.nickname}} {{item.sendTime}}</div>
-                            <el-alert class="text-content" :title="item.ask" :closable="false" style="color: black; font-size: 16px;" ></el-alert>
+                        <div v-if="item.ask" class="message-row message-self" >
+                            <div class="message-bubble">
+                                <div style="font-size: 12px; font-family: '微软雅黑 Light'; font-weight: bold; margin-bottom: 5px;text-align:right;">{{item.nickname}} {{item.sendTime}}</div>
+                                <el-alert class="text-content" :title="item.ask" :closable="false" style="color: black; font-size: 16px;" ></el-alert>
+                            </div>
+                            <img :src="item.avatar || state.userInfo.touxiang || '../../assets/avatar2.jpg'" class="chat-avatar" />
                         </div>
-                        <div v-else class="left-content" >
-                            <div style="font-size: 12px; font-family: '微软雅黑 Light'; font-weight: bold; margin-bottom: 5px;text-align:left;">{{item.nickname}} {{item.sendTime}}</div>
-                            <el-alert class="text-content" :title="item.reply" :closable="false" style="color: black; font-size: 16px;" ></el-alert>
+                        <div v-else class="message-row message-other" >
+                            <img :src="item.avatar || '../../assets/avatar2.jpg'" class="chat-avatar" />
+                            <div class="message-bubble">
+                                <div style="font-size: 12px; font-family: '微软雅黑 Light'; font-weight: bold; margin-bottom: 5px;text-align:left;">{{item.nickname}} {{item.sendTime}}</div>
+                                <el-alert class="text-content" :title="item.reply" :closable="false" style="color: black; font-size: 16px;" ></el-alert>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -313,6 +350,11 @@
                 <el-table-column prop="xingbie" label="性别" width="80"></el-table-column>
                 <el-table-column prop="xihao" label="喜好" width="150" show-overflow-tooltip></el-table-column>
                 <el-table-column prop="xiangqing" label="详情" show-overflow-tooltip></el-table-column>
+                <el-table-column label="操作" width="140">
+                    <template #default="scope">
+                        <el-button size="mini" type="primary" @click="showDiseaseRecord(scope.row)">查看疾病记录</el-button>
+                    </template>
+                </el-table-column>
             </el-table>
         </div>
         <div v-else style="text-align: center; padding: 20px; color: #999;">
@@ -320,6 +362,37 @@
         </div>
         <template #footer>
             <el-button @click="closePetDialog">关闭</el-button>
+        </template>
+    </el-dialog>
+
+    <!-- 疾病上传记录弹窗 -->
+    <el-dialog title="疾病上传记录" v-model="diseaseDialog" width="900px" :before-close="closeDiseaseDialog">
+        <div v-if="diseaseList.length > 0">
+            <el-table :data="diseaseList" border style="width: 100%">
+                <el-table-column prop="chongwumingcheng" label="宠物名称" width="120"></el-table-column>
+                <el-table-column prop="bingqingmiaoshu" label="病情描述" show-overflow-tooltip></el-table-column>
+                <el-table-column label="图片" width="100">
+                    <template #default="scope">
+                        <el-image
+                            v-if="scope.row.tupianshangchuan"
+                            :src="scope.row.tupianshangchuan"
+                            style="width: 60px; height: 60px; object-fit: cover;"
+                            :preview-src-list="[scope.row.tupianshangchuan]"
+                            fit="cover"
+                        />
+                        <span v-else style="color: #999;">无图片</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="fabushijian" label="发布时间" width="120"></el-table-column>
+                <el-table-column prop="sfsh" label="审核状态" width="100"></el-table-column>
+                <el-table-column prop="shhf" label="审核回复" show-overflow-tooltip></el-table-column>
+            </el-table>
+        </div>
+        <div v-else style="text-align: center; padding: 20px; color: #999;">
+            该宠物暂无疾病上传记录
+        </div>
+        <template #footer>
+            <el-button @click="closeDiseaseDialog">关闭</el-button>
         </template>
     </el-dialog>
 </template>
@@ -367,6 +440,33 @@
         height: 100%;
         display: flex;
         flex-direction: column;
+    }
+    .message-row {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+    .message-self {
+        justify-content: flex-end;
+    }
+    .message-other {
+        justify-content: flex-start;
+    }
+    .chat-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+    .message-self .chat-avatar {
+        margin-left: 10px;
+    }
+    .message-other .chat-avatar {
+        margin-right: 10px;
+    }
+    .message-bubble {
+        max-width: 60%;
     }
     .left-content {
         float: left;

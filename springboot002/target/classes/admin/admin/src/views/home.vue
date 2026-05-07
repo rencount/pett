@@ -1,7 +1,20 @@
 <script setup lang="ts" name="Home">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { Session } from '@/utils/storage'
+import { Key } from '@/stores/auth'
 
 const username = ref('管理员')
+
+onMounted(() => {
+  const userInfo = Session.get(Key.userInfoKey)
+  if (userInfo) {
+    const role = Session.get('role')
+    if (role === '宠物医生') {
+      const nicheng = userInfo.nicheng || userInfo.zhanghao || '医生'
+      username.value = nicheng + '医生'
+    }
+  }
+})
 </script>
 
 <template>

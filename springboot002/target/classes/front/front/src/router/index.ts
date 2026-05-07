@@ -47,41 +47,10 @@ export const dynamicRoutes: RouteRecordRaw[] = [
                             
                                                         
                                                 {
-                        path: "/wodeshouzangguanli",
-                        name: "wodeshouzangguanli",
-                        meta: {
-                            title: "我的收藏",
-                            icon: "&#xe7fc;", // 图标
-                        },
-                        redirect:'/wodeshouzangguanli',
-                        children: [
-                            {
-                                path: "/wodeshouzangguanli",
-                                name: "wodeshouzangguanli",
-                                meta: {
-                                    title: "我的收藏",
-                                    icon: "&#xe90f;", // 图标
-                                },
-                                component: () => import("@/views/storeup/index.vue"),
-                            },
-                            {
-                                path: "/wodeshouzangguanlilist",
-                                name: "wodeshouzangguanlilist",
-                                meta: {
-                                    title: "我的收藏管理",
-                                    icon: "&#xe90f;", // 图标
-                                },
-                                component: () => import("@/views/storeup/list.vue"),
-                            },
-
-                        ],
-                    },
-
-                                                {
                         path: "/news",
                         name: "news",
                         meta: {
-                            title: "宠物资讯",
+                            title: "公告资讯",
                             icon: "&#xe7fc;", // 图标
                         },
                         redirect:'/news',
@@ -90,7 +59,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
                                 path: "/news",
                                 name: "news",
                                 meta: {
-                                    title: "宠物资讯",
+                                    title: "公告资讯",
                                     icon: "&#xe90f;", // 图标
                                 },
                                 component: () => import("@/views/news/index.vue"),
@@ -99,7 +68,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
                                 path: "/newsdetail/:id",
                                 name: "newsdetail",
                                 meta: {
-                                    title: "宠物资讯详情",
+                                    title: "公告资讯详情",
                                     icon: "&#xe90f;", // 图标
                                 },
                                 component: () => import("@/views/news/detail.vue"),
@@ -176,70 +145,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
                 
                             
                     
-                        {
-                            path: "/xuexiguanli",
-                            name: "xuexiguanli",
-                            meta: {
-                                title: "学习管理",
-                                icon: "&#xe7fc;", // 图标
-                            },
-                            redirect:'/xuexiguanli',
-                            children: [
-                                {
-                                    path: "/xuexiguanli",
-                                    name: "xuexiguanli",
-                                    meta: {
-                                        title: "学习管理",
-                                        icon: "&#xe90f;", // 图标
-                                    },
-                                    component: () => import("@/views/xuexiguanli/index.vue"),
-                                },
-                                {
-                                    path: "/xuexiguanlidetail/:id",
-                                    name: "xuexiguanlidetail",
-                                    meta: {
-                                        title: "学习管理",
-                                        icon: "&#xe90f;", // 图标
-                                    },
-                                    component: () => import("@/views/xuexiguanli/detail.vue"),
-                                },
-                                {
-                                    path: "/xuexiguanlilist",
-                                    name: "xuexiguanlilist",
-                                    meta: {
-                                        title: "学习管理",
-                                        icon: "&#xe90f;", // 图标
-                                    },
-                                    component: () => import("@/views/xuexiguanli/list.vue"),
-                                },
-
-                            ],
-                        },
-                                    
-                                                {
-                        path: "/discussxuexiguanli",
-                        name: "/discussxuexiguanli",
-                        meta: {
-                            title: "学习管理评论",
-                            icon: "&#xe7fc;", // 图标
-                        },
-                        redirect:'/discussxuexiguanli',
-                        children: [
-                            {
-                                path: "/discussxuexiguanli",
-                                name: "discussxuexiguanli",
-                                meta: {
-                                    title: "学习管理评论",
-                                    icon: "&#xe90f;", // 图标
-                                },
-                                component: () => import("@/views/discussxuexiguanli/index.vue"),
-                            },
-
-                        ],
-                    },
-
                 
-                            
                     
                         {
                             path: "/jibingshangchuan",

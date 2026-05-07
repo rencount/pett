@@ -109,11 +109,14 @@ public class ZhenduanController {
         */
                     @RequestMapping("/save")
         public R save(@RequestBody ZhenduanEntity zhenduan, HttpServletRequest request) {
-            
-        
+
+
             zhenduan.setId(new Date().getTime() + new Double(Math.floor(Math.random() * 1000)).longValue());
             //ValidatorUtils.validateEntity(address);
-                            zhenduan.setUserid((Long) request.getSession().getAttribute("userId"));
+            // 如果前端已传入userid（如医生代患者创建诊断报告），则保留；否则从session获取
+            if (zhenduan.getUserid() == null) {
+                zhenduan.setUserid((Long) request.getSession().getAttribute("userId"));
+            }
                             zhenduanService.insert(zhenduan);
             return R.ok();
         }

@@ -1,0 +1,146 @@
+```mermaid
+erDiagram
+    users {
+        BIGINT id PK
+        VARCHAR username
+        VARCHAR password
+        VARCHAR role
+        TIMESTAMP addtime
+    }
+
+    yonghu {
+        BIGINT id PK
+        VARCHAR zhanghao
+        VARCHAR mima
+        VARCHAR nicheng
+        VARCHAR touxiang
+        VARCHAR xingbie
+        VARCHAR lianxifangshi
+        TIMESTAMP addtime
+    }
+
+    chongwuyisheng {
+        BIGINT id PK
+        VARCHAR zhanghao
+        VARCHAR mima
+        VARCHAR nicheng
+        VARCHAR touxiang
+        VARCHAR xingbie
+        VARCHAR lianxifangshi
+        VARCHAR xiangqing
+        TIMESTAMP addtime
+    }
+
+    chongwuguanli {
+        BIGINT id PK
+        VARCHAR chongwumingcheng
+        VARCHAR tupian
+        VARCHAR xingbie
+        VARCHAR xihao
+        VARCHAR xiangqing
+        BIGINT userid FK
+        DATETIME clicktime
+        INT clicknum
+        INT thumbsupnum
+        INT crazilynum
+        TIMESTAMP addtime
+    }
+
+    jibingshangchuan {
+        BIGINT id PK
+        VARCHAR chongwumingcheng
+        VARCHAR bingqingmiaoshu
+        VARCHAR tupianshangchuan
+        VARCHAR buchong
+        DATE fabushijian
+        BIGINT userid FK
+        VARCHAR sfsh
+        TEXT shhf
+        TIMESTAMP addtime
+    }
+
+    zhenduan {
+        BIGINT id PK
+        VARCHAR chongwumingcheng
+        TEXT zhengzhuang
+        TEXT zhiliaojianyi
+        DATE zhenduanshijian
+        VARCHAR zhenduanren
+        VARCHAR lianxifangshi
+        BIGINT userid FK
+        TIMESTAMP addtime
+    }
+
+    consultation {
+        BIGINT id PK
+        BIGINT sender FK
+        VARCHAR sender_name
+        BIGINT receiver FK
+        VARCHAR receiver_name
+        VARCHAR msg
+        INT read_status
+        TIMESTAMP send_time
+    }
+
+    zixun {
+        BIGINT id PK
+        VARCHAR chongwuyisheng
+        VARCHAR touxiang
+        VARCHAR xingbie
+        VARCHAR lianxifangshi
+        TEXT xiangqing
+        BIGINT userid FK
+        TIMESTAMP addtime
+    }
+
+    discusszixun {
+        BIGINT id PK
+        BIGINT refid FK
+        BIGINT userid FK
+        VARCHAR nickname
+        TEXT content
+        TEXT reply
+        TIMESTAMP addtime
+    }
+
+    news {
+        BIGINT id PK
+        VARCHAR title
+        TEXT introduction
+        VARCHAR picture
+        TEXT content
+        TIMESTAMP addtime
+    }
+
+    yonghu ||--o{ chongwuguanli : "拥有宠物"
+    yonghu ||--o{ jibingshangchuan : "上传疾病记录"
+    yonghu ||--o{ zhenduan : "获取诊断报告"
+    yonghu ||--o{ zixun : "发布咨询"
+    yonghu ||--o{ discusszixun : "发表评论"
+    yonghu ||--o{ consultation : "参与问诊"
+    zixun ||--o{ discusszixun : "咨询评论"
+    chongwuyisheng ||--o{ consultation : "接诊回复"
+    users ||--o{ news : "发布公告"
+```
+
+## 关系说明
+
+### 一对多关系（userid 外键）
+- **yonghu（用户）** 是系统的核心实体，其 `id` 被以下表作为 `userid` 外键引用：
+  - `chongwuguanli` — 用户拥有多只宠物
+  - `jibingshangchuan` — 用户上传多条疾病记录
+  - `zhenduan` — 用户获取多份诊断报告
+  - `zixun` — 用户发布多条咨询
+  - `discusszixun` — 用户发表多条评论
+
+### 评论关系（refid 外键）
+- `discusszixun.refid` → `zixun.id`：每条咨询下可有多个评论
+- 每条评论同时通过 `userid` 关联到 `yonghu`（评论发布者）
+
+### 问诊即时通讯（多态 sender/receiver）
+- `consultation` 表的 `sender` 和 `receiver` 字段既可以指向 `yonghu.id`，也可以指向 `chongwuyisheng.id`
+- 运行时会先查 `chongwuyisheng` 表，再查 `yonghu` 表来解析头像信息
+- 实现了宠物主人和宠物医生之间的实时聊天
+
+### 系统公告
+- `news`（系统公告）由 `users`（管理员）在后台管理发布

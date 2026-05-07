@@ -1,0 +1,151 @@
+erDiagram
+    %% ========== 管理员表 ==========
+    users {
+        bigint id PK "主键"
+        varchar username "用户名"
+        varchar password "密码"
+        varchar role "角色"
+        timestamp addtime "创建时间"
+    }
+
+    %% ========== 用户表 ==========
+    yonghu {
+        bigint id PK "主键"
+        timestamp addtime "创建时间"
+        varchar zhanghao "账号"
+        varchar touxiang "头像"
+        varchar mima "密码"
+        varchar xingbie "性别"
+        varchar lianxifangshi "联系方式"
+        varchar nicheng "昵称"
+    }
+
+    %% ========== 宠物医生表 ==========
+    chongwuyisheng {
+        bigint id PK "主键"
+        timestamp addtime "创建时间"
+        varchar zhanghao "账号"
+        varchar touxiang "头像"
+        varchar mima "密码"
+        varchar xingbie "性别"
+        varchar lianxifangshi "联系方式"
+        varchar nicheng "昵称"
+        varchar xiangqing "详情"
+    }
+
+    %% ========== 宠物信息表 ==========
+    chongwuguanli {
+        bigint id PK "主键"
+        timestamp addtime "创建时间"
+        varchar chongwumingcheng "宠物名称"
+        varchar tupian "图片"
+        varchar xingbie "性别"
+        varchar xihao "喜好"
+        varchar xiangqing "详情"
+        bigint userid FK "用户ID"
+        timestamp clicktime "最近点击时间"
+        bigint clicknum "点击次数"
+        bigint thumbsupnum "赞数"
+        bigint crazilynum "踩数"
+    }
+
+    %% ========== 疾病记录表 ==========
+    jibingshangchuan {
+        bigint id PK "主键"
+        timestamp addtime "创建时间"
+        varchar chongwumingcheng "宠物名称"
+        varchar bingqingmiaoshu "病情描述"
+        varchar tupianshangchuan "图片上传"
+        varchar buchong "补充说明"
+        date fabushijian "发布时间"
+        bigint userid FK "用户ID"
+        varchar sfsh "是否审核"
+        longtext shhf "审核回复"
+    }
+
+    %% ========== 诊断报告表 ==========
+    zhenduan {
+        bigint id PK "主键"
+        timestamp addtime "创建时间"
+        varchar chongwumingcheng "宠物名称"
+        longtext zhengzhuang "症状"
+        longtext zhiliaojianyi "治疗建议"
+        date zhenduanshijian "诊断时间"
+        varchar zhenduanren "诊断人"
+        varchar lianxifangshi "联系方式"
+        bigint userid FK "用户ID"
+    }
+
+    %% ========== 问诊表 ==========
+    consultation {
+        bigint id PK "主键"
+        bigint sender FK "发送者ID"
+        varchar sender_name "发送者昵称"
+        bigint receiver FK "接收者ID"
+        varchar receiver_name "接收者昵称"
+        timestamp send_time "发送时间"
+        varchar msg "消息内容"
+        int read_status "读取状态 0未读 1已读"
+    }
+
+    %% ========== 咨询表 ==========
+    zixun {
+        bigint id PK "主键"
+        timestamp addtime "创建时间"
+        varchar chongwuyisheng "宠物医生名称"
+        varchar touxiang "头像"
+        varchar xingbie "性别"
+        varchar lianxifangshi "联系方式"
+        longtext xiangqing "详情"
+        bigint userid FK "医生ID"
+    }
+
+    %% ========== 咨询评论表 ==========
+    discusszixun {
+        bigint id PK "主键"
+        timestamp addtime "创建时间"
+        bigint refid FK "关联咨询ID"
+        bigint userid FK "用户ID"
+        varchar nickname "用户名"
+        longtext content "评论内容"
+        longtext reply "回复内容"
+    }
+
+    %% ========== 系统公告表 ==========
+    news {
+        bigint id PK "主键"
+        timestamp addtime "创建时间"
+        varchar title "标题"
+        longtext introduction "简介"
+        varchar picture "系统公告图片"
+        longtext content "内容"
+    }
+
+    %% ========== 实体关系 ==========
+
+    %% 用户 1:N 宠物信息
+    yonghu ||--o{ chongwuguanli : "拥有宠物"
+
+    %% 用户 1:N 疾病记录
+    yonghu ||--o{ jibingshangchuan : "记录疾病"
+
+    %% 用户 1:N 诊断报告
+    yonghu ||--o{ zhenduan : "获取诊断报告"
+
+    %% 用户 1:N 问诊消息
+    yonghu ||--o{ consultation : "发起接收问诊"
+
+    %% 宠物医生 1:N 问诊消息
+    chongwuyisheng ||--o{ consultation : "发起接收问诊"
+
+    %% 宠物医生 1:N 咨询（新增医生时自动写入、删除时联动删除）
+    chongwuyisheng ||--o{ zixun : "拥有咨询信息"
+
+    %% 咨询 1:N 咨询评论
+    zixun ||--o{ discusszixun : "被评论"
+
+    %% 用户 1:N 咨询评论
+    yonghu ||--o{ discusszixun : "发表咨询评论"
+
+    %% 管理员 1:N 系统公告
+    users ||--o{ news : "发布公告"
